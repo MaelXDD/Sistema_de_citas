@@ -15,9 +15,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Deshabilitar CSRF (no necesario para APIs REST stateless)
             .csrf(AbstractHttpConfigurer::disable)
-            // Permitir todas las peticiones sin autenticación (temporal)
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 
         return http.build();
