@@ -146,7 +146,7 @@
     <div class="cuadro-emergente">
         <span class="cerrar-ventana" onclick="toggleModal('modal-login')">&times;</span>
         <h3>Iniciar Sesión</h3>
-        <form class="formulario-estandar">
+        <form id="loginForm" class="formulario-estandar">
             <input type="email" name="correo" placeholder="Ingresa tu correo" required>
             <input type="password" name="password" placeholder="Ingresa tu contraseña" required>
             <button type="submit" class="boton-accion-total">Iniciar Sesión</button>
@@ -173,7 +173,7 @@
         </form>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/script.js"></script>
 </body>
 </html>
