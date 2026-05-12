@@ -1,5 +1,6 @@
 package utp.citas.citas.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,11 +11,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "pacientes")
+@Data
 public class Paciente {
 
     @Id
@@ -23,34 +22,29 @@ public class Paciente {
     private Integer idPaciente;
 
     @NotBlank
-    @Size(min = 8, max = 8)
-    @Column(name = "dni", nullable = false, unique = true, length = 8)
-    private String dni;
-
-    @NotBlank
-    @Size(max = 100)
-    @Column(name = "nombres", nullable = false, length = 100)
     private String nombres;
 
     @NotBlank
-    @Size(max = 100)
-    @Column(name = "apellidos", nullable = false, length = 100)
     private String apellidos;
 
     @NotBlank
     @Email
-    @Column(name = "correo", nullable = false, unique = true, length = 150)
+    @Column(unique = true)
     private String correo;
 
-    @Column(name = "telefono", length = 15)
+    @NotBlank
+    @Size(min = 8, max = 15)
+    @Column(unique = true)
+    private String dni;
+
     private String telefono;
 
-    @Column(name = "fecha_nac")
-    private LocalDate fechaNac;
+    @NotBlank
+    @Size(max = 255)
+    @Column(name = "contraseña", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
 
-    @Column(name = "direccion", columnDefinition = "TEXT")
-    private String direccion;
-
-    @Column(name = "activo", nullable = false)
+    @Column(name = "activo")
     private Boolean activo = true;
 }

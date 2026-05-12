@@ -1,0 +1,275 @@
+:root {
+    --azul-institucional: #004a99;
+    --celeste-hospital: #00d4ff;
+    --blanco: #ffffff;
+    --gris-fondo: #f8f9fa;
+    --texto-oscuro: #333333;
+    --amarillo-accion: #ffcc00;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--gris-fondo);
+    color: var(--texto-oscuro);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.encabezado-navegacion {
+    background-color: var(--celeste-hospital);
+    padding: 0.8rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logotipo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logotipo img { height: 50px; }
+
+.logotipo h1 {
+    font-size: 1.3rem;
+    color: var(--blanco);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.menu-principal a {
+    text-decoration: none;
+    color: var(--blanco);
+    margin: 0 15px;
+    font-weight: 600;
+    transition: opacity 0.3s;
+}
+
+.menu-principal a:hover { opacity: 0.8; }
+
+.botones-acceso { display: flex; gap: 12px; }
+
+.boton-blanco {
+    background-color: var(--blanco);
+    color: var(--azul-institucional);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.boton-azul {
+    background-color: var(--azul-institucional);
+    color: var(--blanco);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.boton-blanco:hover, .boton-azul:hover { transform: scale(1.05); }
+
+.bloque-bienvenida {
+    background-color: var(--blanco);
+    padding: 80px 10%;
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    min-height: 500px;
+}
+
+.texto-bienvenida { flex: 1; }
+
+.texto-bienvenida h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--azul-institucional);
+    margin-bottom: 20px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.texto-bienvenida p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.imagen-bienvenida { flex: 1; text-align: right; }
+
+.imagen-bienvenida img {
+    max-width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.contenedor-especialidades {
+    background-color: var(--celeste-hospital);
+    padding: 60px 5%;
+    text-align: center;
+    color: var(--blanco);
+}
+
+.contenedor-especialidades h3 { margin-bottom: 40px; font-size: 2rem; font-weight: 700; }
+
+.rejilla-iconos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.tarjeta-icono {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+}
+
+.circulo-blanco img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    display: block;
+}
+
+.circulo-blanco {
+    background-color: #ffffff !important;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.tarjeta-icono p { font-weight: 800; font-size: 1.1rem; }
+
+.seccion-pasos { padding: 80px 10%; background-color: var(--blanco); }
+
+.seccion-pasos h3 { font-size: 2.2rem; margin-bottom: 50px; font-weight: 700; color: #444; }
+
+.bloque-paso {
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.icono-paso img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.icono-paso {
+    background-color: #00d4ff;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.texto-paso strong { display: block; font-size: 1.3rem; color: var(--azul-institucional); margin-bottom: 5px; }
+
+.pie-inferior {
+    background-color: var(--celeste-hospital);
+    color: var(--blanco);
+    padding: 60px 10% 30px;
+}
+
+.contenedor-pie {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+.columna-footer h4 { margin-bottom: 20px; font-size: 1.2rem; border-bottom: 2px solid rgba(255,255,255,0.3); display: inline-block; padding-bottom: 5px; }
+.columna-footer ul { list-style: none; }
+.columna-footer li { margin-bottom: 10px; }
+
+.capa-fondo-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+}
+
+.cuadro-emergente {
+    background-color: var(--blanco);
+    padding: 40px;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 450px;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.cerrar-ventana {
+    position: absolute;
+    top: 15px; right: 25px;
+    font-size: 35px;
+    cursor: pointer;
+    color: #999;
+}
+
+.formulario-estandar { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+
+.formulario-estandar input {
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.fila-input {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+.fila-input input {
+    flex: 1;
+    min-width: 0;
+}
+
+.boton-accion-total {
+    background-color: var(--amarillo-accion);
+    color: var(--azul-institucional);
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .encabezado-navegacion { flex-direction: column; gap: 15px; text-align: center; }
+    .bloque-bienvenida { flex-direction: column; text-align: center; padding: 40px 5%; }
+    .imagen-bienvenida { text-align: center; }
+    .menu-principal { margin-bottom: 10px; }
+    .fila-input { flex-direction: column; }
+}
