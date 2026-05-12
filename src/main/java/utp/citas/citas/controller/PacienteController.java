@@ -7,6 +7,7 @@ import utp.citas.citas.model.Paciente;
 import utp.citas.citas.service.PacienteService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pacientes")
@@ -24,5 +25,16 @@ public class PacienteController {
     @PostMapping("/registrar")
     public ResponseEntity<Paciente> registrar(@RequestBody Paciente paciente) {
         return ResponseEntity.ok(pacienteService.registrar(paciente));
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
+        try {
+            String correo = credenciales.get("correo");
+            String password = credenciales.get("password");
+            Paciente paciente = pacienteService.login(correo, password);
+            return ResponseEntity.ok(paciente);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
     }
 }

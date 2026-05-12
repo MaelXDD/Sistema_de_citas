@@ -9,4 +9,5 @@ public interface PacienteService {
     Paciente registrar(Paciente paciente);
     Paciente actualizar(Integer id, Paciente paciente);
     void eliminar(Integer id);
+    Paciente login(String correo, String password);
 }

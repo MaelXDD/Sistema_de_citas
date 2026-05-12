@@ -17,7 +17,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         Swal.fire({
             icon: 'warning',
             title: 'DNI Inválido',
-            text: 'El DNI debe tener al menos 8 caracteres.',
+            text: 'El DNI debe tener mínimo 8 caracteres.',
             confirmButtonColor: '#004a99'
         });
         return;
@@ -31,28 +31,25 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         });
 
         if (response.ok) {
-            // Popup de Éxito
+            toggleModal('modal-registro'); // Cierra el modal inmediatamente
+            e.target.reset(); // Limpia los campos
+
             Swal.fire({
                 icon: 'success',
                 title: '¡Registro exitoso!',
                 text: 'Tu cuenta ha sido creada correctamente.',
                 confirmButtonColor: '#004a99'
-            }).then(() => {
-                toggleModal('modal-registro');
-                e.target.reset();
             });
         } else {
             const error = await response.json();
-            const mensajeError = error.mensaje || 'Ocurrió un error al registrar.';
             Swal.fire({
                 icon: 'error',
                 title: 'Error en el registro',
-                text: mensajeError,
+                text: error.mensaje || 'Ocurrió un error al registrar.',
                 confirmButtonColor: '#004a99'
             });
         }
     } catch (err) {
-        console.error("Error de conexión:", err);
         Swal.fire({
             icon: 'error',
             title: 'Error de conexión',
@@ -62,9 +59,6 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     }
 });
 
-// ----------------------------------------------------
-// LÓGICA DE INICIO DE SESIÓN
-// ----------------------------------------------------
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -72,35 +66,34 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = Object.fromEntries(formData.entries());
 
     try {
-        const response = await fetch('http://localhost:8087/api/auth/login', {
+        const response = await fetch('http://localhost:8087/api/pacientes/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
 
         if (response.ok) {
-            // Popup de Éxito para login
+            toggleModal('modal-login'); // Cierra el modal inmediatamente
+            e.target.reset();
+
             Swal.fire({
                 icon: 'success',
                 title: '¡Sesión iniciada!',
                 text: 'Bienvenido al Sistema de Citas.',
                 confirmButtonColor: '#004a99',
-                timer: 2000, // Se cierra automáticamente después de 2 segundos
+                timer: 2000,
                 showConfirmButton: false
-            }).then(() => {
-                toggleModal('modal-login');
-                e.target.reset();
             });
         } else {
+            const error = await response.json();
             Swal.fire({
                 icon: 'error',
                 title: 'Acceso Denegado',
-                text: 'El correo o la contraseña son incorrectos.',
+                text: error.mensaje || 'El correo o la contraseña son incorrectos.',
                 confirmButtonColor: '#004a99'
             });
         }
     } catch (err) {
-        console.error("Error de conexión:", err);
         Swal.fire({
             icon: 'error',
             title: 'Error de conexión',
