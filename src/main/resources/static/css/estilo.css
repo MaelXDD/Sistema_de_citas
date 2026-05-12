@@ -273,3 +273,6 @@ body {
     .menu-principal { margin-bottom: 10px; }
     .fila-input { flex-direction: column; }
 }
+.swal2-container {
+    z-index: 9999 !important;
+}

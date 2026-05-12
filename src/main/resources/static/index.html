@@ -160,8 +160,10 @@
         <h3>Registro</h3>
         <form id="registerForm" class="formulario-estandar">
             <div class="fila-input">
-                <input type="text" name="nombres" placeholder="Nombres" maxlength="50" required>
-                <input type="text" name="apellidos" placeholder="Apellidos" maxlength="50" required>
+                <input type="text" name="nombres" placeholder="Nombres" maxlength="50"
+                       oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');" required>
+                <input type="text" name="apellidos" placeholder="Apellidos" maxlength="50"
+                       oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');" required>
             </div>
             <input type="email" name="correo" placeholder="Correo" maxlength="100" required>
             <input type="text" name="dni" placeholder="DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);" required>

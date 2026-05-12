@@ -1,5 +1,6 @@
 package utp.citas.citas.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class PacienteController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<Paciente> registrar(@RequestBody Paciente paciente) {
+    public ResponseEntity<Paciente> registrar(@Valid @RequestBody Paciente paciente) {
         return ResponseEntity.ok(pacienteService.registrar(paciente));
     }
     @PostMapping("/login")

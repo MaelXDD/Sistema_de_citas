@@ -5,11 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "pacientes")
@@ -21,25 +17,25 @@ public class Paciente {
     @Column(name = "id_paciente")
     private Integer idPaciente;
 
-    @NotBlank
+    @NotBlank(message = "Los nombres son obligatorios.")
     private String nombres;
 
-    @NotBlank
+    @NotBlank(message = "Los apellidos son obligatorios.")
     private String apellidos;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "El correo es obligatorio.")
+    @Email(message = "Ingresa un correo electrónico válido.")
     @Column(unique = true)
     private String correo;
 
-    @NotBlank
-    @Size(min = 8, max = 15)
+    @NotBlank(message = "El DNI es obligatorio.")
+    @Size(min = 8, max = 15, message = "El DNI debe tener entre 8 y 15 dígitos.")
     @Column(unique = true)
     private String dni;
 
     private String telefono;
 
-    @NotBlank
+    @NotBlank(message = "La contraseña es obligatoria.")
     @Size(max = 255)
     @Column(name = "contraseña", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
