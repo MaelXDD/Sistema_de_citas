@@ -154,25 +154,25 @@
     </div>
 </div>
 
-<div id="modal-registro" class="capa-fondo-modal">
-    <div class="cuadro-emergente">
-        <span class="cerrar-ventana" onclick="toggleModal('modal-registro')">&times;</span>
-        <h3>Registro</h3>
-        <form id="registerForm" class="formulario-estandar">
-            <div class="fila-input">
-                <input type="text" name="nombres" placeholder="Nombres" required>
-                <input type="text" name="apellidos" placeholder="Apellidos" required>
-            </div>
-            <input type="email" name="correo" placeholder="Correo" required>
-            <input type="text" name="dni" placeholder="DNI" required>
-            <input type="text" name="telefono" placeholder="Teléfono">
-            <input type="date" name="fechaNac">
-            <input type="text" name="direccion" placeholder="Dirección">
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit" class="boton-accion-total">Crear cuenta</button>
-        </form>
+<form id="registerForm" class="formulario-estandar">
+    <div class="fila-input">
+        <input type="text" name="nombres" placeholder="Nombres" maxlength="50" required>
+        <input type="text" name="apellidos" placeholder="Apellidos" maxlength="50" required>
     </div>
-</div>
+
+    <input type="email" name="correo" placeholder="Correo" maxlength="100" required>
+
+    <input type="text" name="dni" placeholder="DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);" required>
+
+    <input type="text" name="telefono" placeholder="Teléfono" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 15);">
+
+    <input type="date" name="fechaNac">
+
+    <input type="text" name="direccion" placeholder="Dirección" maxlength="150">
+    <input type="password" name="password" placeholder="Contraseña" maxlength="50" required>
+
+    <button type="submit" class="boton-accion-total">Crear cuenta</button>
+</form>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/script.js"></script>
 </body>
