@@ -673,6 +673,302 @@ function iniciarModuloEspecialidades() {
     cargarTablaEspecialidades();
 }
 
+/*horarios.html*/
+
+function iniciarModuloHorarios() {
+    const tbody = document.getElementById('tablaHorariosBody');
+    if (!tbody) return;
+
+    const API_HORARIOS = 'http://localhost:8087/api/horarios';
+    const API_DOCTORES = 'http://localhost:8087/api/doctores/activos';
+
+    const vistaTabla      = document.getElementById('vistaTabla');
+    const vistaFormulario = document.getElementById('vistaFormulario');
+    const btnMostrarForm  = document.getElementById('btnMostrarForm');
+    const btnCancelar     = document.getElementById('btnCancelar');
+    const btnRegresarHome = document.getElementById('btnRegresarHome');
+    const form            = document.getElementById('horarioForm');
+
+    const selectDoctorHorario = document.getElementById('selectDoctor');
+    const selectDiaHorario    = document.getElementById('selectDiaHorario');
+    const selectTurnoHorario  = document.getElementById('selectTurno');
+
+    // ─── NAVEGACIÓN ────────────────────────────────────────────────────────────
+
+    function mostrarFormulario() {
+        form.reset();
+        cargarDoctoresEnSelector();
+        vistaTabla.classList.add('oculto');
+        vistaFormulario.classList.remove('oculto');
+    }
+
+    function ocultarFormulario() {
+        form.reset();
+        vistaFormulario.classList.add('oculto');
+        vistaTabla.classList.remove('oculto');
+    }
+
+    if (btnMostrarForm)  btnMostrarForm.addEventListener('click', mostrarFormulario);
+    if (btnCancelar)     btnCancelar.addEventListener('click', ocultarFormulario);
+    if (btnRegresarHome) btnRegresarHome.addEventListener('click', () => { location.href = '/index.html'; });
+
+    // ─── CARGAR TABLA ──────────────────────────────────────────────────────────
+
+    async function cargarTablaHorarios() {
+        // FIX 1: mostrar estado de carga limpio antes de cada fetch
+        tbody.innerHTML = '<tr><td colspan="6" class="celda-estado">Cargando horarios de atención...</td></tr>';
+
+        try {
+            // FIX 2: timeout explícito para no quedar colgado si el backend no responde
+            const controller = new AbortController();
+            const timeoutId  = setTimeout(() => controller.abort(), 8000);
+
+            const response = await fetch(API_HORARIOS, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            // FIX 3: manejar respuestas no-OK con mensaje claro
+            if (!response.ok) {
+                throw new Error(`El servidor respondió con estado ${response.status}`);
+            }
+
+            const horarios = await response.json();
+
+            if (!horarios || horarios.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="celda-estado">No hay horarios asignados actualmente.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            horarios.forEach(h => {
+                // FIX 4: acceso defensivo a propiedades anidadas con optional chaining
+                const doctorNombre = h.doctor
+                    ? `${h.doctor.apellidos ?? ''}, ${h.doctor.nombres ?? ''}`.trim()
+                    : 'No asignado';
+
+                const especialidad = h.doctor?.especialidad?.nombre ?? 'Sin asignar';
+
+                const inicioFormateado = typeof h.horaInicio === 'string'
+                    ? h.horaInicio.substring(0, 5)
+                    : (h.horaInicio ?? '-');
+
+                const finFormateado = typeof h.horaFin === 'string'
+                    ? h.horaFin.substring(0, 5)
+                    : (h.horaFin ?? '-');
+
+                const diaTexto = h.diaSemana ?? 'No definido';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold; color:var(--azul-institucional);">${doctorNombre}</td>
+                    <td><span class="badge-especialidad">${especialidad}</span></td>
+                    <td style="text-transform: uppercase;">${diaTexto}</td>
+                    <td>${inicioFormateado}</td>
+                    <td>${finFormateado}</td>
+                    <td>
+                        <button class="boton-eliminar btn-borrar-horario" data-id="${h.idHorario}">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // FIX 5: delegar el evento en tbody para no perder listeners al re-renderizar
+            tbody.querySelectorAll('.btn-borrar-horario').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idHorario = e.currentTarget.getAttribute('data-id');
+                    eliminarHorario(idHorario);
+                });
+            });
+
+        } catch (err) {
+            console.error('❌ Error al cargar horarios:', err);
+
+            // FIX 6: distinguir timeout vs error de red vs otro error
+            let mensajeUsuario = 'Error al cargar los horarios.';
+            if (err.name === 'AbortError') {
+                mensajeUsuario = 'El servidor tardó demasiado en responder (timeout). Verifique que Spring Boot esté corriendo en el puerto 8087.';
+            } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                mensajeUsuario = 'No se pudo conectar al servidor. Verifique que el backend esté activo en http://localhost:8087.';
+            } else {
+                mensajeUsuario = `Error: ${err.message}`;
+            }
+
+            tbody.innerHTML = `<tr><td colspan="6" class="celda-estado" style="color:red;">${mensajeUsuario}</td></tr>`;
+        }
+    }
+
+    // ─── CARGAR DOCTORES EN SELECTOR ───────────────────────────────────────────
+
+    async function cargarDoctoresEnSelector() {
+        // FIX 7: resetear selector con estado de carga antes del fetch
+        selectDoctorHorario.innerHTML = '<option value="" disabled selected>Cargando médicos activos...</option>';
+        selectDoctorHorario.disabled = true;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId  = setTimeout(() => controller.abort(), 8000);
+
+            const response = await fetch(API_DOCTORES, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) throw new Error(`Estado ${response.status}`);
+
+            const doctores = await response.json();
+
+            selectDoctorHorario.innerHTML = '<option value="" disabled selected>Seleccione el médico...</option>';
+
+            if (!doctores || doctores.length === 0) {
+                selectDoctorHorario.innerHTML = '<option value="" disabled selected>No hay médicos activos</option>';
+                return;
+            }
+
+            doctores.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc.idDoctor;
+                // FIX 8: acceso defensivo a especialidad en el selector también
+                const nombreEsp = doc.especialidad?.nombre ?? 'Sin especialidad';
+                option.textContent = `${doc.apellidos}, ${doc.nombres} (${nombreEsp})`;
+                selectDoctorHorario.appendChild(option);
+            });
+
+        } catch (err) {
+            console.error('❌ Error al cargar doctores:', err);
+            selectDoctorHorario.innerHTML = '<option value="" disabled selected>Error al cargar médicos</option>';
+        } finally {
+            // FIX 9: siempre re-habilitar el selector aunque falle
+            selectDoctorHorario.disabled = false;
+        }
+    }
+
+    // ─── GUARDAR HORARIO ───────────────────────────────────────────────────────
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const idDoctor  = selectDoctorHorario.value;
+        const diaSemana = selectDiaHorario.value;
+        const turno     = selectTurnoHorario.value;
+
+        // FIX 10: validación de campos antes de enviar
+        if (!idDoctor || !diaSemana || !turno) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos incompletos',
+                text: 'Por favor complete todos los campos antes de guardar.',
+                confirmButtonColor: '#004a99'
+            });
+            return;
+        }
+
+        const [horaInicio, horaFin] = turno.split('-');
+
+        const horarioPayload = {
+            doctor:     { idDoctor: parseInt(idDoctor) },
+            diaSemana:  diaSemana,
+            horaInicio: `${horaInicio}:00`,
+            horaFin:    `${horaFin}:00`
+        };
+
+        // FIX 11: deshabilitar botón para evitar doble submit
+        const btnGuardar = document.getElementById('btnGuardar');
+        if (btnGuardar) {
+            btnGuardar.disabled = true;
+            btnGuardar.textContent = 'Guardando...';
+        }
+
+        try {
+            const response = await fetch(API_HORARIOS, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(horarioPayload)
+            });
+
+            if (response.ok) {
+                ocultarFormulario();
+                await cargarTablaHorarios();
+                Swal.fire({
+                    icon:               'success',
+                    title:              '¡Turno Asignado!',
+                    text:               'El horario médico fue guardado con éxito.',
+                    confirmButtonColor: '#004a99'
+                });
+            } else {
+                const mensajeError = await response.text();
+                Swal.fire({
+                    icon:               'error',
+                    title:              'No se pudo guardar',
+                    text:               mensajeError || 'El doctor ya tiene un turno ese mismo día.',
+                    confirmButtonColor: '#004a99'
+                });
+            }
+        } catch (err) {
+            console.error('❌ Error al guardar horario:', err);
+            Swal.fire({
+                icon:               'error',
+                title:              'Fallo de Red',
+                text:               'No hay respuesta del backend de Spring Boot.',
+                confirmButtonColor: '#004a99'
+            });
+        } finally {
+            // FIX 12: re-habilitar botón siempre, aunque falle
+            if (btnGuardar) {
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = 'Guardar Horario';
+            }
+        }
+    });
+
+    // ─── ELIMINAR HORARIO ──────────────────────────────────────────────────────
+
+    async function eliminarHorario(id) {
+        const result = await Swal.fire({
+            title:              '¿Eliminar este horario?',
+            text:               'El doctor ya no tendrá bloques disponibles para citas en este día.',
+            icon:               'warning',
+            showCancelButton:   true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor:  '#666',
+            confirmButtonText:  'Sí, eliminar',
+            cancelButtonText:   'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            const response = await fetch(`${API_HORARIOS}/${id}`, { method: 'DELETE' });
+
+            // FIX 13: aceptar 200 y 204 como éxito en DELETE
+            if (response.ok || response.status === 204) {
+                await cargarTablaHorarios();
+                Swal.fire({
+                    icon:               'success',
+                    title:              'Eliminado',
+                    text:               'El horario fue removido permanentemente.',
+                    confirmButtonColor: '#004a99'
+                });
+            } else {
+                throw new Error(`Estado ${response.status}`);
+            }
+        } catch (err) {
+            console.error('❌ Error al eliminar horario:', err);
+            Swal.fire({
+                icon:               'error',
+                title:              'Error de Red',
+                text:               'No se pudo procesar la eliminación.',
+                confirmButtonColor: '#004a99'
+            });
+        }
+    }
+
+    // ─── INICIO ────────────────────────────────────────────────────────────────
+    cargarTablaHorarios();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('tablaHorariosBody')) {
+        iniciarModuloHorarios();
+    }
+});
+
 // ══════════════════════════════════════════════════════════════
 //  MÓDULO: CITAS (citas.html)
 // ══════════════════════════════════════════════════════════════
