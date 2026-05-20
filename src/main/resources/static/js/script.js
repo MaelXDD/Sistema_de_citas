@@ -1,3 +1,5 @@
+const API = 'http://localhost:8087';
+
 function toggleModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -12,6 +14,8 @@ window.onclick = function(event) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    renderizarHeaderSesion();
 
     const logotipoGlobal = document.querySelector('.encabezado-navegacion .logotipo');
     if (logotipoGlobal) {
@@ -41,8 +45,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     iniciarModuloEspecialidades();
+    iniciarModuloCitas();
 
 });
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO: SESIÓN GLOBAL
+// ══════════════════════════════════════════════════════════════
+
+function cerrarSesion() {
+    sessionStorage.removeItem('paciente');
+    window.location.href = '/index.html';
+}
+
+function renderizarHeaderSesion() {
+    const zona = document.getElementById('zona-sesion');
+    const nav  = document.getElementById('menu-nav');
+
+    const paciente = JSON.parse(sessionStorage.getItem('paciente'));
+
+    if (paciente) {
+        if (zona) {
+            zona.innerHTML = `
+                <span style="color:#fff; font-weight:600;">Hola, ${paciente.nombres}</span>
+                <button class="boton-blanco" onclick="cerrarSesion()">Cerrar sesión</button>`;
+        }
+        if (nav) {
+            nav.innerHTML = `
+                <a href="/index.html">Inicio</a>
+                <a href="/citas.html">Sacar Cita</a>
+                <a href="/mis-citas.html">Mis Citas</a>`;
+        }
+    } else {
+        if (zona) {
+            zona.innerHTML = `
+                <button class="boton-blanco" onclick="toggleModal('modal-login')">Iniciar Sesión</button>
+                <button class="boton-azul"   onclick="toggleModal('modal-registro')">Registrarse</button>`;
+        }
+        if (nav) {
+            nav.innerHTML = `
+                <a href="/index.html">Inicio</a>
+                <a href="/especialidades.html">Especialidades</a>
+                <a href="/doctores.html">Doctores</a>`;
+        }
+    }
+}
+
+function irSacarCita() {
+    const paciente = JSON.parse(sessionStorage.getItem('paciente'));
+    if (paciente) {
+        window.location.href = '/citas.html';
+    } else {
+        toggleModal('modal-login');
+    }
+}
 
 // ══════════════════════════════════════════════════════════════
 //  MÓDULO: REGISTRO
@@ -65,7 +121,7 @@ function configurarFormularioRegistro(form) {
         }
 
         try {
-            const response = await fetch('http://localhost:8087/api/pacientes/registrar', {
+            const response = await fetch(`${API}/api/pacientes/registrar`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -111,13 +167,15 @@ function configurarFormularioLogin(form) {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch('http://localhost:8087/api/pacientes/login', {
+            const response = await fetch(`${API}/api/pacientes/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
             if (response.ok) {
+                const paciente = await response.json();
+                sessionStorage.setItem('paciente', JSON.stringify(paciente));
                 toggleModal('modal-login');
                 e.target.reset();
                 Swal.fire({
@@ -127,6 +185,8 @@ function configurarFormularioLogin(form) {
                     confirmButtonColor: '#004a99',
                     timer: 2000,
                     showConfirmButton: false
+                }).then(() => {
+                    renderizarHeaderSesion();
                 });
             } else {
                 const error = await response.json();
@@ -164,7 +224,7 @@ function configurarNavegacionVistas() {
             document.getElementById('tituloFormulario').textContent      = "Registrar Especialista";
             document.getElementById('descripcionFormulario').textContent = "Ingrese los datos requeridos para dar de alta al médico.";
             document.getElementById('inputIdDoctor').value               = "";
-            document.getElementById('inputDni').readOnly                = false;
+            document.getElementById('inputDni').readOnly                 = false;
             vistaTabla.classList.add('oculto');
             vistaFormulario.classList.remove('oculto');
         });
@@ -210,7 +270,7 @@ function configurarSanitizacionInputs() {
 async function cargarDoctores() {
     const tbody = document.getElementById('tablaDoctoresBody');
     try {
-        const response = await fetch('http://localhost:8087/api/doctores/activos');
+        const response = await fetch(`${API}/api/doctores/activos`);
         if (response.ok) {
             const doctores = await response.json();
 
@@ -248,7 +308,7 @@ function prepararEdicionDoctor(id, dni, nombres, apellidos, correo, telefono, id
     document.getElementById('inputNombres').value    = nombres;
     document.getElementById('inputApellidos').value  = apellidos;
     document.getElementById('inputDni').value        = dni;
-    document.getElementById('inputDni').readOnly    = true;
+    document.getElementById('inputDni').readOnly     = true;
     document.getElementById('inputCorreo').value     = correo;
     document.getElementById('inputTelefono').value   = telefono;
 
@@ -275,7 +335,7 @@ async function eliminarDoctor(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                const response = await fetch(`http://localhost:8087/api/doctores/${id}`, {
+                const response = await fetch(`${API}/api/doctores/${id}`, {
                     method: 'DELETE'
                 });
 
@@ -288,10 +348,11 @@ async function eliminarDoctor(id) {
                         confirmButtonColor: '#004a99'
                     });
                 } else {
+                    const err = await response.json().catch(() => ({}));
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'No se pudo desactivar el registro.',
+                        text: err.mensaje || 'No se pudo desactivar el registro.',
                         confirmButtonColor: '#004a99'
                     });
                 }
@@ -309,14 +370,15 @@ async function eliminarDoctor(id) {
 
 async function cargarEspecialidades() {
     const select = document.getElementById('selectEspecialidad');
+    if (!select) return;
     try {
-        const response = await fetch('http://localhost:8087/api/especialidades/activas');
+        const response = await fetch(`${API}/api/especialidades/activas`);
         if (response.ok) {
             const especialidades = await response.json();
             select.innerHTML = '<option value="" disabled selected>Seleccione la especialidad...</option>';
             especialidades.forEach(esp => {
-                const option   = document.createElement('option');
-                option.value   = Math.floor(esp.idEspecialidad);
+                const option       = document.createElement('option');
+                option.value       = Math.floor(esp.idEspecialidad);
                 option.textContent = esp.nombre;
                 select.appendChild(option);
             });
@@ -335,11 +397,11 @@ function configurarFormularioDoctores() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData                 = new FormData(form);
-        const inputData                = Object.fromEntries(formData.entries());
-        const selectEsp                = document.getElementById('selectEspecialidad');
+        const formData                   = new FormData(form);
+        const inputData                  = Object.fromEntries(formData.entries());
+        const selectEsp                  = document.getElementById('selectEspecialidad');
         const idEspecialidadSeleccionada = selectEsp ? selectEsp.value : '';
-        const idDoctor                 = document.getElementById('inputIdDoctor').value;
+        const idDoctor                   = document.getElementById('inputIdDoctor').value;
 
         if (inputData.dni && inputData.dni.length !== 8) {
             Swal.fire({
@@ -371,7 +433,7 @@ function configurarFormularioDoctores() {
         };
 
         const esEdicion = idDoctor !== "";
-        const url       = esEdicion ? `http://localhost:8087/api/doctores/${idDoctor}` : 'http://localhost:8087/api/doctores';
+        const url       = esEdicion ? `${API}/api/doctores/${idDoctor}` : `${API}/api/doctores`;
         const metodo    = esEdicion ? 'PUT' : 'POST';
 
         try {
@@ -421,7 +483,7 @@ function iniciarModuloEspecialidades() {
     const tbody = document.getElementById('tablaEspecialidadesBody');
     if (!tbody) return;
 
-    const API_ESP         = 'http://localhost:8087/api/especialidades';
+    const API_ESP         = `${API}/api/especialidades`;
     const vistaTabla      = document.getElementById('vistaTabla');
     const vistaFormulario = document.getElementById('vistaFormulario');
     const btnMostrarForm  = document.getElementById('btnMostrarForm');
@@ -429,7 +491,6 @@ function iniciarModuloEspecialidades() {
     const btnRegresar     = document.getElementById('btnRegresarHome');
     const form            = document.getElementById('especialidadForm');
 
-    // ── Vistas ────────────────────────────────────────────────
     function mostrarFormularioEsp(esEdicion = false) {
         document.getElementById('tituloFormulario').textContent      = esEdicion ? 'Editar Especialidad'                                  : 'Registrar Especialidad';
         document.getElementById('descripcionFormulario').textContent = esEdicion ? 'Modifique los datos de la especialidad seleccionada.' : 'Ingrese los datos requeridos para registrar la especialidad.';
@@ -455,7 +516,6 @@ function iniciarModuloEspecialidades() {
         }
     });
 
-    // ── Cargar tabla ──────────────────────────────────────────
     async function cargarTablaEspecialidades() {
         try {
             const res = await fetch(API_ESP);
@@ -498,7 +558,6 @@ function iniciarModuloEspecialidades() {
         }
     }
 
-    // ── Submit: POST / PUT ────────────────────────────────────
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -554,7 +613,6 @@ function iniciarModuloEspecialidades() {
         }
     });
 
-    // ── Funciones globales (usadas por onclick del innerHTML) ─
     window.prepararEdicionEsp = function(id, nombre, descripcion) {
         document.getElementById('inputIdEspecialidad').value = id;
         document.getElementById('inputNombre').value         = nombre;
@@ -581,15 +639,9 @@ function iniciarModuloEspecialidades() {
         try {
             let res;
             if (estaActivo) {
-                // Desactivar → DELETE (baja lógica, ya funciona)
-                res = await fetch(`http://localhost:8087/api/especialidades/${id}`, {
-                    method: 'DELETE'
-                });
+                res = await fetch(`${API}/api/especialidades/${id}`, { method: 'DELETE' });
             } else {
-                // Activar → PUT /api/especialidades/{id}/activar
-                res = await fetch(`http://localhost:8087/api/especialidades/${id}/activar`, {
-                    method: 'PUT'
-                });
+                res = await fetch(`${API}/api/especialidades/${id}/activar`, { method: 'PUT' });
             }
 
             if (res.ok || res.status === 204) {
@@ -598,7 +650,7 @@ function iniciarModuloEspecialidades() {
                     icon: 'success',
                     title: `Especialidad ${estaActivo ? 'desactivada' : 'activada'}`,
                     text:  'El cambio fue guardado en la base de datos.',
-                    ConfirmButtonColor: '#004a99'
+                    confirmButtonColor: '#004a99'
                 });
             } else {
                 Swal.fire({
@@ -618,6 +670,253 @@ function iniciarModuloEspecialidades() {
         }
     };
 
-    // ── Init ──────────────────────────────────────────────────
     cargarTablaEspecialidades();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO: CITAS (citas.html)
+// ══════════════════════════════════════════════════════════════
+
+function iniciarModuloCitas() {
+    const tablaEspBody = document.getElementById('tabla-especialidades-body');
+    if (!tablaEspBody) return;
+
+    // Verificar que el paciente esté logueado
+    const paciente = JSON.parse(sessionStorage.getItem('paciente'));
+    if (!paciente) {
+        window.location.href = '/index.html';
+        return;
+    }
+
+    // Estado del flujo de cita
+    let idEspecialidadSel = null;
+    let idDoctorSel       = null;
+    let idHorarioSel      = null;
+    let nombreEspSel      = '';
+    let nombreDocSel      = '';
+    let diaSel            = '';
+    let horaSel           = '';
+
+    // ── Navegación entre pasos ──────────────────────────────────
+    window.volverPaso = function(numeroPaso) {
+        [1, 2, 3].forEach(n => {
+            document.getElementById(`paso${n}`).classList.add('oculto');
+            document.getElementById(`ind-paso${n}`).classList.remove('activo');
+        });
+        document.getElementById(`paso${numeroPaso}`).classList.remove('oculto');
+        document.getElementById(`ind-paso${numeroPaso}`).classList.add('activo');
+    };
+
+    function irAPaso(numeroPaso) {
+        window.volverPaso(numeroPaso);
+    }
+
+    // ── PASO 1: Cargar especialidades ───────────────────────────
+    async function cargarEspecialidadesCitas() {
+        tablaEspBody.innerHTML = '<tr><td colspan="4" class="celda-estado">Cargando especialidades...</td></tr>';
+        try {
+            const res = await fetch(`${API}/api/especialidades/activas`);
+            if (!res.ok) throw new Error();
+            const lista = await res.json();
+
+            if (lista.length === 0) {
+                tablaEspBody.innerHTML = '<tr><td colspan="4" class="celda-estado">No hay especialidades disponibles.</td></tr>';
+                return;
+            }
+
+            tablaEspBody.innerHTML = lista.map((esp, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${esp.nombre}</strong></td>
+                    <td>${esp.descripcion ?? '<span style="color:#aaa;">—</span>'}</td>
+                    <td>
+                        <button class="boton-editar"
+                            onclick="seleccionarEspecialidad(${esp.idEspecialidad}, '${esp.nombre.replace(/'/g, "\\'")}')">
+                            Seleccionar →
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+        } catch {
+            tablaEspBody.innerHTML = '<tr><td colspan="4" class="celda-estado" style="color:red;">Error al cargar especialidades.</td></tr>';
+        }
+    }
+
+    // ── PASO 2: Cargar doctores por especialidad ────────────────
+    window.seleccionarEspecialidad = async function(idEsp, nombreEsp) {
+        idEspecialidadSel = idEsp;
+        nombreEspSel      = nombreEsp;
+
+        document.getElementById('nombre-especialidad-sel').textContent = nombreEsp;
+
+        const tablaDocBody = document.getElementById('tabla-doctores-body');
+        tablaDocBody.innerHTML = '<tr><td colspan="5" class="celda-estado">Cargando doctores...</td></tr>';
+
+        irAPaso(2);
+
+        try {
+            const res = await fetch(`${API}/api/doctores/activos`);
+            if (!res.ok) throw new Error();
+            const todos = await res.json();
+
+            // Filtrar doctores de la especialidad seleccionada
+            const filtrados = todos.filter(d =>
+                d.especialidad && d.especialidad.idEspecialidad === idEsp
+            );
+
+            if (filtrados.length === 0) {
+                tablaDocBody.innerHTML = '<tr><td colspan="5" class="celda-estado">No hay doctores disponibles para esta especialidad.</td></tr>';
+                return;
+            }
+
+            tablaDocBody.innerHTML = filtrados.map((doc, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${doc.apellidos}, ${doc.nombres}</strong></td>
+                    <td>${doc.dni}</td>
+                    <td>${doc.telefono ?? '<span style="color:#aaa;">—</span>'}</td>
+                    <td>
+                        <button class="boton-editar"
+                            onclick="seleccionarDoctor(${doc.idDoctor}, '${doc.nombres.replace(/'/g, "\\'")} ${doc.apellidos.replace(/'/g, "\\'")}')">
+                            Seleccionar →
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+        } catch {
+            tablaDocBody.innerHTML = '<tr><td colspan="5" class="celda-estado" style="color:red;">Error al cargar doctores.</td></tr>';
+        }
+    };
+
+    // ── PASO 3: Cargar horarios por doctor ──────────────────────
+    window.seleccionarDoctor = async function(idDoc, nombreDoc) {
+        idDoctorSel  = idDoc;
+        nombreDocSel = nombreDoc;
+
+        document.getElementById('nombre-doctor-sel').textContent = nombreDoc;
+
+        const tablaHorBody = document.getElementById('tabla-horarios-body');
+        tablaHorBody.innerHTML = '<tr><td colspan="4" class="celda-estado">Cargando horarios...</td></tr>';
+
+        irAPaso(3);
+
+        try {
+            const res = await fetch(`${API}/api/horarios/doctor/${idDoc}`);
+            if (!res.ok) throw new Error();
+            const horarios = await res.json();
+
+            if (horarios.length === 0) {
+                tablaHorBody.innerHTML = '<tr><td colspan="4" class="celda-estado">Este doctor no tiene horarios disponibles.</td></tr>';
+                return;
+            }
+
+            tablaHorBody.innerHTML = horarios.map(h => `
+                <tr>
+                    <td><strong>${h.diaSemana}</strong></td>
+                    <td>${h.horaInicio}</td>
+                    <td>${h.horaFin}</td>
+                    <td>
+                        <button class="boton-editar"
+                            onclick="abrirModalConfirmar(${h.idHorario}, '${h.diaSemana}', '${h.horaInicio}', '${h.horaFin}')">
+                            Reservar →
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+        } catch {
+            tablaHorBody.innerHTML = '<tr><td colspan="4" class="celda-estado" style="color:red;">Error al cargar horarios.</td></tr>';
+        }
+    };
+
+    // ── Modal: confirmar cita ───────────────────────────────────
+    window.abrirModalConfirmar = function(idHorario, dia, horaInicio, horaFin) {
+        idHorarioSel = idHorario;
+        diaSel       = dia;
+        horaSel      = `${horaInicio} - ${horaFin}`;
+
+        document.getElementById('res-especialidad').textContent = nombreEspSel;
+        document.getElementById('res-doctor').textContent       = nombreDocSel;
+        document.getElementById('res-dia').textContent          = dia;
+        document.getElementById('res-horario').textContent      = horaSel;
+
+        // Establecer fecha mínima = hoy
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById('input-fecha-cita').min   = hoy;
+        document.getElementById('input-fecha-cita').value = '';
+        document.getElementById('input-motivo').value     = '';
+
+        toggleModal('modal-confirmar-cita');
+    };
+
+    // ── Confirmar y redirigir al pago ───────────────────────────
+    window.confirmarYPagar = async function() {
+        const fecha  = document.getElementById('input-fecha-cita').value;
+        const motivo = document.getElementById('input-motivo').value.trim();
+
+        if (!fecha) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Fecha requerida',
+                text: 'Por favor selecciona una fecha para tu cita.',
+                confirmButtonColor: '#004a99'
+            });
+            return;
+        }
+
+        const payload = {
+            paciente:  { idPaciente: paciente.idPaciente },
+            doctor:    { idDoctor: idDoctorSel },
+            horario:   { idHorario: idHorarioSel },
+            fechaCita: fecha,
+            motivo:    motivo || null,
+            estado:    'PENDIENTE'
+        };
+
+        try {
+            const res = await fetch(`${API}/api/citas`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const citaCreada = await res.json();
+                toggleModal('modal-confirmar-cita');
+
+                // Guardar datos de la cita en sessionStorage para la página de pago
+                sessionStorage.setItem('citaPendiente', JSON.stringify({
+                    idCita:       citaCreada.idCita,
+                    especialidad: nombreEspSel,
+                    doctor:       nombreDocSel,
+                    dia:          diaSel,
+                    horario:      horaSel,
+                    fecha:        fecha,
+                    motivo:       motivo || '—'
+                }));
+
+                window.location.href = '/pago.html';
+            } else {
+                const err = await res.json().catch(() => ({}));
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al registrar cita',
+                    text: err.mensaje || 'No se pudo guardar la cita.',
+                    confirmButtonColor: '#004a99'
+                });
+            }
+        } catch {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor.',
+                confirmButtonColor: '#004a99'
+            });
+        }
+    };
+
+    // Iniciar cargando las especialidades
+    cargarEspecialidadesCitas();
 }
