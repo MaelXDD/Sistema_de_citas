@@ -164,7 +164,7 @@ function configurarNavegacionVistas() {
             document.getElementById('tituloFormulario').textContent      = "Registrar Especialista";
             document.getElementById('descripcionFormulario').textContent = "Ingrese los datos requeridos para dar de alta al médico.";
             document.getElementById('inputIdDoctor').value               = "";
-            document.getElementById('inputDni').disabled                 = false;
+            document.getElementById('inputDni').readOnly                = false;
             vistaTabla.classList.add('oculto');
             vistaFormulario.classList.remove('oculto');
         });
@@ -248,7 +248,7 @@ function prepararEdicionDoctor(id, dni, nombres, apellidos, correo, telefono, id
     document.getElementById('inputNombres').value    = nombres;
     document.getElementById('inputApellidos').value  = apellidos;
     document.getElementById('inputDni').value        = dni;
-    document.getElementById('inputDni').disabled     = true;
+    document.getElementById('inputDni').readOnly    = true;
     document.getElementById('inputCorreo').value     = correo;
     document.getElementById('inputTelefono').value   = telefono;
 
