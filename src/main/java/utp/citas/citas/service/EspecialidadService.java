@@ -17,4 +17,5 @@ public interface EspecialidadService {
     Especialidad actualizar(Integer id, Especialidad especialidad);
 
     void desactivar(Integer id);
+    void activar(Integer id);
 }

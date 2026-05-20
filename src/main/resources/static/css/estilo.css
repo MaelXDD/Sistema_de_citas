@@ -21,6 +21,10 @@ body {
     overflow-x: hidden;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════════════════════ */
+
 .encabezado-navegacion {
     background-color: var(--celeste-hospital);
     padding: 0.8rem 5%;
@@ -84,6 +88,10 @@ body {
 
 .boton-blanco:hover, .boton-azul:hover { transform: scale(1.05); }
 
+/* ══════════════════════════════════════════════════════════════
+   HERO / BIENVENIDA
+══════════════════════════════════════════════════════════════ */
+
 .bloque-bienvenida {
     background-color: var(--blanco);
     padding: 80px 10%;
@@ -116,6 +124,10 @@ body {
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   ESPECIALIDADES (sección home)
+══════════════════════════════════════════════════════════════ */
+
 .contenedor-especialidades {
     background-color: var(--celeste-hospital);
     padding: 60px 5%;
@@ -139,13 +151,6 @@ body {
     width: 150px;
 }
 
-.circulo-blanco img {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    display: block;
-}
-
 .circulo-blanco {
     background-color: #ffffff !important;
     width: 120px;
@@ -158,7 +163,18 @@ body {
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
+.circulo-blanco img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    display: block;
+}
+
 .tarjeta-icono p { font-weight: 800; font-size: 1.1rem; }
+
+/* ══════════════════════════════════════════════════════════════
+   PASOS
+══════════════════════════════════════════════════════════════ */
 
 .seccion-pasos { padding: 80px 10%; background-color: var(--blanco); }
 
@@ -169,12 +185,6 @@ body {
     align-items: flex-start;
     gap: 25px;
     margin-bottom: 40px;
-}
-
-.icono-paso img {
-    width: 45px;
-    height: 45px;
-    object-fit: contain;
 }
 
 .icono-paso {
@@ -189,7 +199,22 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.texto-paso strong { display: block; font-size: 1.3rem; color: var(--azul-institucional); margin-bottom: 5px; }
+.icono-paso img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.texto-paso strong {
+    display: block;
+    font-size: 1.3rem;
+    color: var(--azul-institucional);
+    margin-bottom: 5px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════════ */
 
 .pie-inferior {
     background-color: var(--celeste-hospital);
@@ -203,15 +228,26 @@ body {
     gap: 40px;
 }
 
-.columna-footer h4 { margin-bottom: 20px; font-size: 1.2rem; border-bottom: 2px solid rgba(255,255,255,0.3); display: inline-block; padding-bottom: 5px; }
+.columna-footer h4 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
 .columna-footer ul { list-style: none; }
 .columna-footer li { margin-bottom: 10px; }
+
+/* ══════════════════════════════════════════════════════════════
+   MODALES
+══════════════════════════════════════════════════════════════ */
 
 .capa-fondo-modal {
     display: none;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0,0,0,0.7);
     backdrop-filter: blur(8px);
     z-index: 2000;
 }
@@ -236,13 +272,43 @@ body {
     color: #999;
 }
 
-.formulario-estandar { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+/* ══════════════════════════════════════════════════════════════
+   FORMULARIOS
+══════════════════════════════════════════════════════════════ */
+
+.formulario-estandar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
 
 .formulario-estandar input {
     padding: 14px;
     border: 1px solid #ddd;
     border-radius: 10px;
     font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.formulario-estandar input:focus {
+    border-color: var(--azul-institucional);
+}
+
+.formulario-estandar textarea {
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.formulario-estandar textarea:focus {
+    border-color: var(--azul-institucional);
 }
 
 .fila-input {
@@ -250,6 +316,7 @@ body {
     gap: 15px;
     width: 100%;
 }
+
 .fila-input input {
     flex: 1;
     min-width: 0;
@@ -264,20 +331,20 @@ body {
     font-weight: 800;
     font-size: 1.1rem;
     cursor: pointer;
+    transition: opacity 0.2s;
 }
 
-@media (max-width: 768px) {
-    .encabezado-navegacion { flex-direction: column; gap: 15px; text-align: center; }
-    .bloque-bienvenida { flex-direction: column; text-align: center; padding: 40px 5%; }
-    .imagen-bienvenida { text-align: center; }
-    .menu-principal { margin-bottom: 10px; }
-    .fila-input { flex-direction: column; }
-}
-.swal2-container {
-    z-index: 9999 !important;
-}
+.boton-accion-total:hover { opacity: 0.9; }
 
-/*doctores*/
+/* ══════════════════════════════════════════════════════════════
+   SWEETALERT2
+══════════════════════════════════════════════════════════════ */
+
+.swal2-container { z-index: 9999 !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   GESTIÓN (doctores.html / especialidades.html)
+══════════════════════════════════════════════════════════════ */
 
 .enlace-activo {
     opacity: 0.8;
@@ -299,8 +366,8 @@ body {
     border-radius: 25px;
     width: 100%;
     max-width: 1000px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    border: 2px solid rgba(0, 74, 153, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 2px solid rgba(0,74,153,0.1);
 }
 
 .panel-formulario {
@@ -343,9 +410,11 @@ body {
     margin-bottom: 25px;
 }
 
-.tabla-responsiva {
-    overflow-x: auto;
-}
+/* ══════════════════════════════════════════════════════════════
+   TABLA
+══════════════════════════════════════════════════════════════ */
+
+.tabla-responsiva { overflow-x: auto; }
 
 .tabla-doctores {
     width: 100%;
@@ -362,17 +431,18 @@ body {
     font-weight: 700;
 }
 
-.tabla-doctores th:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
-.tabla-doctores th:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+.tabla-doctores th:first-child  { border-top-left-radius: 10px;  border-bottom-left-radius: 10px; }
+.tabla-doctores th:last-child   { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
 
 .tabla-doctores td {
     padding: 12px 15px;
     border-bottom: 1px solid #eee;
     color: #333;
+    vertical-align: middle;
 }
 
 .tabla-doctores tr:hover td {
-    background-color: rgba(0, 74, 153, 0.03);
+    background-color: rgba(0,74,153,0.03);
 }
 
 .celda-estado {
@@ -380,6 +450,18 @@ body {
     color: #888;
     padding: 30px;
 }
+
+/* Columna acciones: siempre en una línea */
+.tabla-doctores td:last-child,
+.tabla-doctores th:last-child {
+    white-space: nowrap;
+    width: 170px;
+    text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BADGE ESPECIALIDAD
+══════════════════════════════════════════════════════════════ */
 
 .badge-especialidad {
     background-color: var(--celeste-hospital);
@@ -390,6 +472,10 @@ body {
     font-weight: bold;
     display: inline-block;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SELECTOR DE ESPECIALIDAD
+══════════════════════════════════════════════════════════════ */
 
 .contenedor-selector {
     display: flex;
@@ -413,7 +499,16 @@ body {
     font-family: inherit;
     outline: none;
     width: 100%;
+    transition: border-color 0.2s;
 }
+
+.selector-estandar:focus {
+    border-color: var(--azul-institucional);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BOTONES FORMULARIO
+══════════════════════════════════════════════════════════════ */
 
 .fila-botones-formulario {
     display: flex;
@@ -426,6 +521,78 @@ body {
     margin: 0;
 }
 
-.oculto {
-    display: none !important;
+/* Cancelar dentro del formulario */
+.fila-botones-formulario .boton-blanco {
+    background-color: transparent;
+    color: var(--azul-institucional);
+    border: 2px solid var(--azul-institucional);
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.fila-botones-formulario .boton-blanco:hover {
+    background-color: var(--azul-institucional);
+    color: var(--blanco);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BOTONES DE ACCIÓN EN TABLA (Editar / Desactivar)
+══════════════════════════════════════════════════════════════ */
+
+.boton-editar {
+    background-color: var(--azul-institucional);
+    color: var(--blanco);
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 5px;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.boton-editar:hover { opacity: 0.85; }
+
+.boton-eliminar {
+    background-color: var(--blanco);
+    color: #dc2626;
+    border: 1.5px solid #dc2626;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.boton-eliminar:hover {
+    background-color: #dc2626;
+    color: var(--blanco);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   OCULTO
+══════════════════════════════════════════════════════════════ */
+
+.oculto { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .encabezado-navegacion { flex-direction: column; gap: 15px; text-align: center; }
+    .bloque-bienvenida     { flex-direction: column; text-align: center; padding: 40px 5%; }
+    .imagen-bienvenida     { text-align: center; }
+    .menu-principal        { margin-bottom: 10px; }
+    .fila-input            { flex-direction: column; }
+    .cabecera-panel        { flex-direction: column; align-items: flex-start; }
+    .fila-botones-formulario { flex-direction: column; }
 }

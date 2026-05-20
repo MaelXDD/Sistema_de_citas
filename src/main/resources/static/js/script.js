@@ -39,7 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
         configurarSanitizacionInputs();
         configurarFormularioDoctores();
     }
+
+    iniciarModuloEspecialidades();
+
 });
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO: REGISTRO
+// ══════════════════════════════════════════════════════════════
 
 function configurarFormularioRegistro(form) {
     form.addEventListener('submit', async (e) => {
@@ -93,6 +100,10 @@ function configurarFormularioRegistro(form) {
     });
 }
 
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO: LOGIN
+// ══════════════════════════════════════════════════════════════
+
 function configurarFormularioLogin(form) {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -137,19 +148,23 @@ function configurarFormularioLogin(form) {
     });
 }
 
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO: DOCTORES (doctores.html)
+// ══════════════════════════════════════════════════════════════
+
 function configurarNavegacionVistas() {
-    const vistaTabla = document.getElementById('vistaTabla');
+    const vistaTabla      = document.getElementById('vistaTabla');
     const vistaFormulario = document.getElementById('vistaFormulario');
-    const btnMostrarForm = document.getElementById('btnMostrarForm');
-    const btnCancelar = document.getElementById('btnCancelar');
+    const btnMostrarForm  = document.getElementById('btnMostrarForm');
+    const btnCancelar     = document.getElementById('btnCancelar');
     const btnRegresarHome = document.getElementById('btnRegresarHome');
 
     if (btnMostrarForm) {
         btnMostrarForm.addEventListener('click', () => {
-            document.getElementById('tituloFormulario').textContent = "Registrar Especialista";
+            document.getElementById('tituloFormulario').textContent      = "Registrar Especialista";
             document.getElementById('descripcionFormulario').textContent = "Ingrese los datos requeridos para dar de alta al médico.";
-            document.getElementById('inputIdDoctor').value = "";
-            document.getElementById('inputDni').disabled = false;
+            document.getElementById('inputIdDoctor').value               = "";
+            document.getElementById('inputDni').disabled                 = false;
             vistaTabla.classList.add('oculto');
             vistaFormulario.classList.remove('oculto');
         });
@@ -162,9 +177,7 @@ function configurarNavegacionVistas() {
         if (formDoc) formDoc.reset();
     };
 
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', volverALaTabla);
-    }
+    if (btnCancelar)     btnCancelar.addEventListener('click', volverALaTabla);
 
     if (btnRegresarHome) {
         btnRegresarHome.addEventListener('click', () => {
@@ -178,7 +191,7 @@ function configurarNavegacionVistas() {
 }
 
 function configurarSanitizacionInputs() {
-    const inputDni = document.getElementById('inputDni');
+    const inputDni      = document.getElementById('inputDni');
     const inputTelefono = document.getElementById('inputTelefono');
 
     if (inputDni) {
@@ -210,41 +223,39 @@ async function cargarDoctores() {
             doctores.forEach(doc => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight: bold; color: var(--azul-institucional);">${doc.dni}</td>
+                    <td style="font-weight:bold; color:var(--azul-institucional);">${doc.dni}</td>
                     <td>${doc.apellidos}, ${doc.nombres}</td>
                     <td><span class="badge-especialidad">${doc.especialidad ? doc.especialidad.nombre : 'Sin asignar'}</span></td>
                     <td>${doc.correo}</td>
                     <td>${doc.telefono ? doc.telefono : '<span style="color:#aaa;">-</span>'}</td>
                     <td>
-                        <button class="boton-azul" style="padding: 5px 12px; font-size: 0.85rem; margin-right: 5px;" onclick="prepararEdicionDoctor(${doc.idDoctor}, '${doc.dni}', '${doc.nombres}', '${doc.apellidos}', '${doc.correo}', '${doc.telefono || ''}', ${doc.especialidad ? doc.especialidad.idEspecialidad : 'null'})">Editar</button>
-                        <button class="boton-blanco" style="padding: 5px 12px; font-size: 0.85rem; border: 1px solid red; color: red;" onclick="eliminarDoctor(${doc.idDoctor})">Eliminar</button>
+                        <button class="boton-editar" onclick="prepararEdicionDoctor(${doc.idDoctor}, '${doc.dni}', '${doc.nombres}', '${doc.apellidos}', '${doc.correo}', '${doc.telefono || ''}', ${doc.especialidad ? doc.especialidad.idEspecialidad : 'null'})">Editar</button>
+                        <button class="boton-eliminar" onclick="eliminarDoctor(${doc.idDoctor})">Eliminar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="6" class="celda-estado" style="color: red;">Error al obtener la lista de médicos.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="celda-estado" style="color:red;">Error al obtener la lista de médicos.</td></tr>';
         }
     } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="6" class="celda-estado" style="color: red;">Error de conexión con el servidor.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="celda-estado" style="color:red;">Error de conexión con el servidor.</td></tr>';
     }
 }
 
 function prepararEdicionDoctor(id, dni, nombres, apellidos, correo, telefono, idEspecialidad) {
-    document.getElementById('inputIdDoctor').value = id;
-    document.getElementById('inputNombres').value = nombres;
-    document.getElementById('inputApellidos').value = apellidos;
-    document.getElementById('inputDni').value = dni;
-    document.getElementById('inputDni').disabled = true;
-    document.getElementById('inputCorreo').value = correo;
-    document.getElementById('inputTelefono').value = telefono;
+    document.getElementById('inputIdDoctor').value   = id;
+    document.getElementById('inputNombres').value    = nombres;
+    document.getElementById('inputApellidos').value  = apellidos;
+    document.getElementById('inputDni').value        = dni;
+    document.getElementById('inputDni').disabled     = true;
+    document.getElementById('inputCorreo').value     = correo;
+    document.getElementById('inputTelefono').value   = telefono;
 
     const select = document.getElementById('selectEspecialidad');
-    if (select && idEspecialidad) {
-        select.value = idEspecialidad;
-    }
+    if (select && idEspecialidad) select.value = idEspecialidad;
 
-    document.getElementById('tituloFormulario').textContent = "Modificar Especialista";
+    document.getElementById('tituloFormulario').textContent      = "Modificar Especialista";
     document.getElementById('descripcionFormulario').textContent = "Edite los campos necesarios para actualizar el registro del médico.";
 
     document.getElementById('vistaTabla').classList.add('oculto');
@@ -303,10 +314,9 @@ async function cargarEspecialidades() {
         if (response.ok) {
             const especialidades = await response.json();
             select.innerHTML = '<option value="" disabled selected>Seleccione la especialidad...</option>';
-
             especialidades.forEach(esp => {
-                const option = document.createElement('option');
-                option.value = Math.floor(esp.idEspecialidad);
+                const option   = document.createElement('option');
+                option.value   = Math.floor(esp.idEspecialidad);
                 option.textContent = esp.nombre;
                 select.appendChild(option);
             });
@@ -325,11 +335,11 @@ function configurarFormularioDoctores() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(form);
-        const inputData = Object.fromEntries(formData.entries());
-        const selectEsp = document.getElementById('selectEspecialidad');
+        const formData                 = new FormData(form);
+        const inputData                = Object.fromEntries(formData.entries());
+        const selectEsp                = document.getElementById('selectEspecialidad');
         const idEspecialidadSeleccionada = selectEsp ? selectEsp.value : '';
-        const idDoctor = document.getElementById('inputIdDoctor').value;
+        const idDoctor                 = document.getElementById('inputIdDoctor').value;
 
         if (inputData.dni && inputData.dni.length !== 8) {
             Swal.fire({
@@ -352,40 +362,35 @@ function configurarFormularioDoctores() {
         }
 
         const doctorPayload = {
-            dni: inputData.dni,
-            nombres: inputData.nombres,
-            apellidos: inputData.apellidos,
-            correo: inputData.correo,
-            telefono: inputData.telefono || null,
-            especialidad: {
-                idEspecialidad: parseInt(idEspecialidadSeleccionada)
-            }
+            dni:          inputData.dni,
+            nombres:      inputData.nombres,
+            apellidos:    inputData.apellidos,
+            correo:       inputData.correo,
+            telefono:     inputData.telefono || null,
+            especialidad: { idEspecialidad: parseInt(idEspecialidadSeleccionada) }
         };
 
         const esEdicion = idDoctor !== "";
-        const url = esEdicion ? `http://localhost:8087/api/doctores/${idDoctor}` : 'http://localhost:8087/api/doctores';
-        const metodo = esEdicion ? 'PUT' : 'POST';
+        const url       = esEdicion ? `http://localhost:8087/api/doctores/${idDoctor}` : 'http://localhost:8087/api/doctores';
+        const metodo    = esEdicion ? 'PUT' : 'POST';
 
         try {
             const response = await fetch(url, {
-                method: metodo,
+                method:  metodo,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(doctorPayload)
+                body:    JSON.stringify(doctorPayload)
             });
 
             if (response.ok) {
                 form.reset();
                 if (selectEsp) selectEsp.selectedIndex = 0;
-
                 document.getElementById('vistaFormulario').classList.add('oculto');
                 document.getElementById('vistaTabla').classList.remove('oculto');
-
                 await cargarDoctores();
-
                 Swal.fire({
                     icon: 'success',
                     title: esEdicion ? '¡Cambios Guardados!' : '¡Médico Añadido!',
-                    text: esEdicion ? 'Los datos del doctor se actualizaron con éxito.' : 'El doctor se ha registrado correctamente.',
+                    text:  esEdicion ? 'Los datos del doctor se actualizaron con éxito.' : 'El doctor se ha registrado correctamente.',
                     confirmButtonColor: '#004a99'
                 });
             } else {
@@ -406,4 +411,213 @@ function configurarFormularioDoctores() {
             });
         }
     });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MÓDULO: ESPECIALIDADES (especialidades.html)
+// ══════════════════════════════════════════════════════════════
+
+function iniciarModuloEspecialidades() {
+    const tbody = document.getElementById('tablaEspecialidadesBody');
+    if (!tbody) return;
+
+    const API_ESP         = 'http://localhost:8087/api/especialidades';
+    const vistaTabla      = document.getElementById('vistaTabla');
+    const vistaFormulario = document.getElementById('vistaFormulario');
+    const btnMostrarForm  = document.getElementById('btnMostrarForm');
+    const btnCancelar     = document.getElementById('btnCancelar');
+    const btnRegresar     = document.getElementById('btnRegresarHome');
+    const form            = document.getElementById('especialidadForm');
+
+    // ── Vistas ────────────────────────────────────────────────
+    function mostrarFormularioEsp(esEdicion = false) {
+        document.getElementById('tituloFormulario').textContent      = esEdicion ? 'Editar Especialidad'                                  : 'Registrar Especialidad';
+        document.getElementById('descripcionFormulario').textContent = esEdicion ? 'Modifique los datos de la especialidad seleccionada.' : 'Ingrese los datos requeridos para registrar la especialidad.';
+        document.getElementById('btnGuardar').textContent            = esEdicion ? 'Actualizar Especialidad'                              : 'Guardar Especialidad';
+        vistaTabla.classList.add('oculto');
+        vistaFormulario.classList.remove('oculto');
+    }
+
+    function mostrarTablaEsp() {
+        vistaFormulario.classList.add('oculto');
+        vistaTabla.classList.remove('oculto');
+        form.reset();
+        document.getElementById('inputIdEspecialidad').value = '';
+    }
+
+    btnMostrarForm.addEventListener('click', () => mostrarFormularioEsp(false));
+    btnCancelar.addEventListener('click', mostrarTablaEsp);
+    btnRegresar.addEventListener('click', () => {
+        if (!vistaFormulario.classList.contains('oculto')) {
+            mostrarTablaEsp();
+        } else {
+            location.href = '/index.html';
+        }
+    });
+
+    // ── Cargar tabla ──────────────────────────────────────────
+    async function cargarTablaEspecialidades() {
+        try {
+            const res = await fetch(API_ESP);
+            if (!res.ok) throw new Error();
+            const lista = await res.json();
+
+            if (lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="celda-estado">No hay especialidades registradas.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = lista.map(esp => `
+                <tr>
+                    <td style="font-weight:bold; color:var(--azul-institucional);">${esp.idEspecialidad}</td>
+                    <td>${esp.nombre}</td>
+                    <td>${esp.descripcion ?? '<span style="color:#aaa;">—</span>'}</td>
+                    <td>
+                        <span style="
+                            display:inline-block; padding:3px 12px; border-radius:20px;
+                            font-size:0.82rem; font-weight:700;
+                            background:${esp.activo ? '#d1fae5' : '#fee2e2'};
+                            color:${esp.activo ? '#065f46' : '#991b1b'};
+                        ">${esp.activo ? 'Activo' : 'Inactivo'}</span>
+                    </td>
+                    <td>
+                        <button class="boton-editar"
+                            onclick="prepararEdicionEsp(${esp.idEspecialidad}, '${esp.nombre.replace(/'/g, "\\'")}', \`${(esp.descripcion ?? '').replace(/`/g, '\\`')}\`)">
+                            Editar
+                        </button>
+                        <button class="boton-eliminar"
+                            onclick="toggleEstadoEsp(${esp.idEspecialidad}, ${esp.activo})">
+                            ${esp.activo ? 'Desactivar' : 'Activar'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+        } catch {
+            tbody.innerHTML = '<tr><td colspan="5" class="celda-estado" style="color:red;">Error al cargar las especialidades.</td></tr>';
+        }
+    }
+
+    // ── Submit: POST / PUT ────────────────────────────────────
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id          = document.getElementById('inputIdEspecialidad').value;
+        const nombre      = document.getElementById('inputNombre').value.trim();
+        const descripcion = document.getElementById('inputDescripcion').value.trim();
+
+        if (!nombre) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campo requerido',
+                text: 'El nombre de la especialidad es obligatorio.',
+                confirmButtonColor: '#004a99'
+            });
+            return;
+        }
+
+        const esEdicion = id !== '';
+        const payload   = { nombre, descripcion: descripcion || null };
+
+        try {
+            const res = await fetch(esEdicion ? `${API_ESP}/${id}` : API_ESP, {
+                method:  esEdicion ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                mostrarTablaEsp();
+                await cargarTablaEspecialidades();
+                Swal.fire({
+                    icon: 'success',
+                    title: esEdicion ? '¡Especialidad actualizada!' : '¡Especialidad registrada!',
+                    text:  esEdicion ? 'Los datos se actualizaron en la base de datos.' : 'La especialidad fue guardada correctamente en la base de datos.',
+                    confirmButtonColor: '#004a99'
+                });
+            } else {
+                const err = await res.json().catch(() => ({}));
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: err.mensaje || 'No se pudo guardar la especialidad.',
+                    confirmButtonColor: '#004a99'
+                });
+            }
+        } catch {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor Spring Boot.',
+                confirmButtonColor: '#004a99'
+            });
+        }
+    });
+
+    // ── Funciones globales (usadas por onclick del innerHTML) ─
+    window.prepararEdicionEsp = function(id, nombre, descripcion) {
+        document.getElementById('inputIdEspecialidad').value = id;
+        document.getElementById('inputNombre').value         = nombre;
+        document.getElementById('inputDescripcion').value    = descripcion;
+        mostrarFormularioEsp(true);
+    };
+
+    window.toggleEstadoEsp = async function(id, estaActivo) {
+        const accion = estaActivo ? 'desactivar' : 'activar';
+        const result = await Swal.fire({
+            icon: 'warning',
+            title: `¿Deseas ${accion} esta especialidad?`,
+            text:  estaActivo
+                ? 'Dejará de estar disponible para nuevas citas.'
+                : 'Volverá a estar disponible en el sistema.',
+            showCancelButton:   true,
+            confirmButtonText:  `Sí, ${accion}`,
+            cancelButtonText:   'Cancelar',
+            confirmButtonColor: estaActivo ? '#d33' : '#004a99'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            let res;
+            if (estaActivo) {
+                // Desactivar → DELETE (baja lógica, ya funciona)
+                res = await fetch(`http://localhost:8087/api/especialidades/${id}`, {
+                    method: 'DELETE'
+                });
+            } else {
+                // Activar → PUT /api/especialidades/{id}/activar
+                res = await fetch(`http://localhost:8087/api/especialidades/${id}/activar`, {
+                    method: 'PUT'
+                });
+            }
+
+            if (res.ok || res.status === 204) {
+                await cargarTablaEspecialidades();
+                Swal.fire({
+                    icon: 'success',
+                    title: `Especialidad ${estaActivo ? 'desactivada' : 'activada'}`,
+                    text:  'El cambio fue guardado en la base de datos.',
+                    ConfirmButtonColor: '#004a99'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `No se pudo ${accion} la especialidad.`,
+                    confirmButtonColor: '#004a99'
+                });
+            }
+        } catch {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'Sin respuesta del servidor.',
+                confirmButtonColor: '#004a99'
+            });
+        }
+    };
+
+    // ── Init ──────────────────────────────────────────────────
+    cargarTablaEspecialidades();
 }

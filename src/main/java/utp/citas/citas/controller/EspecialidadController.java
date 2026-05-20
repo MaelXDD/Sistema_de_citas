@@ -57,4 +57,9 @@ public class EspecialidadController {
         especialidadService.desactivar(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}/activar")
+    public ResponseEntity<Void> activar(@PathVariable Integer id) {
+        especialidadService.activar(id);
+        return ResponseEntity.noContent().build();
+    }
 }
