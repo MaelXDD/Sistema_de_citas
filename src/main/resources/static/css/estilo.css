@@ -276,3 +276,156 @@ body {
 .swal2-container {
     z-index: 9999 !important;
 }
+
+/*doctores*/
+
+.enlace-activo {
+    opacity: 0.8;
+    border-bottom: 2px solid var(--blanco);
+    padding-bottom: 3px;
+}
+
+.area-gestion-medica {
+    padding: 50px 5%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 90px);
+}
+
+.tarjeta-panel {
+    background-color: var(--blanco);
+    padding: 40px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 1000px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(0, 74, 153, 0.1);
+}
+
+.panel-formulario {
+    max-width: 600px;
+}
+
+.cabecera-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.cabecera-panel button {
+    width: auto;
+    padding: 12px 25px;
+    margin: 0;
+}
+
+.titulos-seccion h2,
+.cabecera-formulario h2 {
+    color: var(--azul-institucional);
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.titulos-seccion p,
+.cabecera-formulario p {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 5px 0 0 0;
+}
+
+.cabecera-formulario {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.tabla-responsiva {
+    overflow-x: auto;
+}
+
+.tabla-doctores {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95rem;
+}
+
+.tabla-doctores th {
+    background-color: var(--azul-institucional);
+    color: var(--blanco);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 700;
+}
+
+.tabla-doctores th:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+.tabla-doctores th:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+.tabla-doctores td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+.tabla-doctores tr:hover td {
+    background-color: rgba(0, 74, 153, 0.03);
+}
+
+.celda-estado {
+    text-align: center;
+    color: #888;
+    padding: 30px;
+}
+
+.badge-especialidad {
+    background-color: var(--celeste-hospital);
+    color: var(--azul-institucional);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.contenedor-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.etiqueta-selector {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--azul-institucional);
+    margin-left: 5px;
+}
+
+.selector-estandar {
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    background-color: var(--blanco);
+    font-family: inherit;
+    outline: none;
+    width: 100%;
+}
+
+.fila-botones-formulario {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.fila-botones-formulario button {
+    flex: 1;
+    margin: 0;
+}
+
+.oculto {
+    display: none !important;
+}

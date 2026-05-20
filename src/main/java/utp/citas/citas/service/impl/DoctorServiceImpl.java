@@ -2,6 +2,7 @@ package utp.citas.citas.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utp.citas.citas.model.Cita;
 import utp.citas.citas.model.Doctor;
 import utp.citas.citas.model.Especialidad;
 import utp.citas.citas.model.Horario;
@@ -9,6 +10,7 @@ import utp.citas.citas.repository.DoctorRepository;
 import utp.citas.citas.repository.EspecialidadRepository;
 import utp.citas.citas.repository.HorarioRepository;
 import utp.citas.citas.service.DoctorService;
+import utp.citas.citas.repository.CitaRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,14 +22,16 @@ public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
     private final EspecialidadRepository especialidadRepository;
     private final HorarioRepository horarioRepository;
+    private final CitaRepository citaRepository;
 
-    // Inyección por constructor
     public DoctorServiceImpl(DoctorRepository doctorRepository,
                              EspecialidadRepository especialidadRepository,
-                             HorarioRepository horarioRepository) {
+                             HorarioRepository horarioRepository,
+                             CitaRepository citaRepository) {
         this.doctorRepository = doctorRepository;
         this.especialidadRepository = especialidadRepository;
         this.horarioRepository = horarioRepository;
+        this.citaRepository = citaRepository;
     }
 
     @Override
@@ -105,9 +109,36 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public void desactivar(Integer id) {
-        Doctor doctor = buscarPorId(id);
-        doctor.setActivo(false);
-        doctorRepository.save(doctor);
+        buscarPorId(id);
+
+        List<Horario> horariosActivos = horarioRepository.findActivosByDoctor(id);
+        if (!horariosActivos.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "No se puede eliminar al doctor porque tiene horarios de atención activos asignados."
+            );
+        }
+
+        List<Cita> todasLasCitasDelDoctor = citaRepository.findAll().stream()
+                .filter(cita -> cita.getDoctor() != null && id.equals(cita.getDoctor().getIdDoctor()))
+                .collect(java.util.stream.Collectors.toList());
+
+        if (!todasLasCitasDelDoctor.isEmpty()) {
+
+            boolean tieneCitasActivas = todasLasCitasDelDoctor.stream()
+                    .anyMatch(cita -> cita.getFechaCita() != null
+                            && !cita.getFechaCita().isBefore(java.time.LocalDate.now())
+                            && ("PENDIENTE".equalsIgnoreCase(cita.getEstado())
+                            || "CONFIRMADA".equalsIgnoreCase(cita.getEstado())));
+
+            if (tieneCitasActivas) {
+                throw new IllegalArgumentException(
+                        "No se puede eliminar al doctor porque cuenta con citas médicas activas pendientes de atención."
+                );
+            }
+        }
+
+        doctorRepository.deleteById(id);
+        doctorRepository.flush();
     }
 
     @Override
