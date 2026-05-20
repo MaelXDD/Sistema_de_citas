@@ -16,11 +16,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-@Transactional
 public class DoctorServiceImpl implements DoctorService {
 
     private final DoctorRepository doctorRepository;
-    private final EspecialidadRepository especialidadRepository;
+    private final EspecialidadRepository  especialidadRepository;
     private final HorarioRepository horarioRepository;
     private final CitaRepository citaRepository;
 
@@ -49,7 +48,6 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     @Transactional(readOnly = true)
     public List<Doctor> listarActivosPorEspecialidad(Integer idEspecialidad) {
-        // Validar que la especialidad existe antes de buscar
         especialidadRepository.findById(idEspecialidad)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Especialidad no encontrada con id: " + idEspecialidad));
@@ -66,17 +64,14 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor crear(Doctor doctor) {
-        // Validar DNI único
         if (doctorRepository.findByDni(doctor.getDni()).isPresent()) {
             throw new IllegalArgumentException(
                     "Ya existe un doctor con el DNI: " + doctor.getDni());
         }
-        // Validar correo único
         if (doctorRepository.existsByCorreo(doctor.getCorreo())) {
             throw new IllegalArgumentException(
                     "Ya existe un doctor con el correo: " + doctor.getCorreo());
         }
-        // Resolver la entidad Especialidad completa desde BD
         Especialidad especialidad = especialidadRepository
                 .findById(doctor.getEspecialidad().getIdEspecialidad())
                 .orElseThrow(() -> new NoSuchElementException(
@@ -96,7 +91,6 @@ public class DoctorServiceImpl implements DoctorService {
         if (datos.getActivo() != null) {
             existente.setActivo(datos.getActivo());
         }
-        // Actualizar especialidad si se envía
         if (datos.getEspecialidad() != null && datos.getEspecialidad().getIdEspecialidad() != null) {
             Especialidad especialidad = especialidadRepository
                     .findById(datos.getEspecialidad().getIdEspecialidad())
@@ -123,7 +117,6 @@ public class DoctorServiceImpl implements DoctorService {
                 .collect(java.util.stream.Collectors.toList());
 
         if (!todasLasCitasDelDoctor.isEmpty()) {
-
             boolean tieneCitasActivas = todasLasCitasDelDoctor.stream()
                     .anyMatch(cita -> cita.getFechaCita() != null
                             && !cita.getFechaCita().isBefore(java.time.LocalDate.now())
@@ -138,20 +131,19 @@ public class DoctorServiceImpl implements DoctorService {
         }
 
         doctorRepository.deleteById(id);
-        doctorRepository.flush();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Horario> obtenerHorarios(Integer idDoctor) {
-        buscarPorId(idDoctor); // valida que el doctor existe
+        buscarPorId(idDoctor);
         return horarioRepository.findActivosByDoctor(idDoctor);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Horario> obtenerHorariosPorDia(Integer idDoctor, String diaSemana) {
-        buscarPorId(idDoctor); // valida que el doctor existe
+        buscarPorId(idDoctor);
         return horarioRepository.findByDoctor_IdDoctorAndDiaSemanaAndActivoTrue(idDoctor, diaSemana.toUpperCase());
     }
 }
