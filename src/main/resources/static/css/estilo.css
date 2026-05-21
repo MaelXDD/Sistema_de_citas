@@ -21,9 +21,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════════════════════════ */
+/* Header */
 
 .encabezado-navegacion {
     background-color: var(--celeste-hospital);
@@ -88,9 +86,7 @@ body {
 
 .boton-blanco:hover, .boton-azul:hover { transform: scale(1.05); }
 
-/* ══════════════════════════════════════════════════════════════
-   HERO / BIENVENIDA
-══════════════════════════════════════════════════════════════ */
+/* Bienvenida */
 
 .bloque-bienvenida {
     background-color: var(--blanco);
@@ -124,9 +120,7 @@ body {
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ESPECIALIDADES (sección home)
-══════════════════════════════════════════════════════════════ */
+/* Especialidades en el index.html*/
 
 .contenedor-especialidades {
     background-color: var(--celeste-hospital);
@@ -172,9 +166,7 @@ body {
 
 .tarjeta-icono p { font-weight: 800; font-size: 1.1rem; }
 
-/* ══════════════════════════════════════════════════════════════
-   PASOS
-══════════════════════════════════════════════════════════════ */
+/* Pasos en index.html */
 
 .seccion-pasos { padding: 80px 10%; background-color: var(--blanco); }
 
@@ -212,9 +204,7 @@ body {
     margin-bottom: 5px;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════════════════════════ */
+/* Footer */
 
 .pie-inferior {
     background-color: var(--celeste-hospital);
@@ -239,9 +229,7 @@ body {
 .columna-footer ul { list-style: none; }
 .columna-footer li { margin-bottom: 10px; }
 
-/* ══════════════════════════════════════════════════════════════
-   MODALES
-══════════════════════════════════════════════════════════════ */
+/* Modales */
 
 .capa-fondo-modal {
     display: none;
@@ -272,9 +260,7 @@ body {
     color: #999;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   FORMULARIOS
-══════════════════════════════════════════════════════════════ */
+/* Formularios */
 
 .formulario-estandar {
     display: flex;
@@ -336,15 +322,11 @@ body {
 
 .boton-accion-total:hover { opacity: 0.9; }
 
-/* ══════════════════════════════════════════════════════════════
-   SWEETALERT2
-══════════════════════════════════════════════════════════════ */
+/* Sweetalert2 */
 
 .swal2-container { z-index: 9999 !important; }
 
-/* ══════════════════════════════════════════════════════════════
-   GESTIÓN (doctores.html / especialidades.html)
-══════════════════════════════════════════════════════════════ */
+/* Gestión de (doctores.html / especialidades.html)*/
 
 .enlace-activo {
     opacity: 0.8;
@@ -410,9 +392,7 @@ body {
     margin-bottom: 25px;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   TABLA
-══════════════════════════════════════════════════════════════ */
+/* Tabla (doctores, especialidad, horarios) */
 
 .tabla-responsiva { overflow-x: auto; }
 
@@ -451,7 +431,7 @@ body {
     padding: 30px;
 }
 
-/* Columna acciones: siempre en una línea */
+/* Columna de acciones para que siempre esté en una línea */
 .tabla-doctores td:last-child,
 .tabla-doctores th:last-child {
     white-space: nowrap;
@@ -459,9 +439,7 @@ body {
     text-align: center;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BADGE ESPECIALIDAD
-══════════════════════════════════════════════════════════════ */
+/* Badge Especialidad */
 
 .badge-especialidad {
     background-color: var(--celeste-hospital);
@@ -473,9 +451,7 @@ body {
     display: inline-block;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SELECTOR DE ESPECIALIDAD
-══════════════════════════════════════════════════════════════ */
+/* Seleccionar la Especialidad */
 
 .contenedor-selector {
     display: flex;
@@ -506,9 +482,7 @@ body {
     border-color: var(--azul-institucional);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BOTONES FORMULARIO
-══════════════════════════════════════════════════════════════ */
+/* botones del formulario */
 
 .fila-botones-formulario {
     display: flex;
@@ -539,9 +513,8 @@ body {
     color: var(--blanco);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BOTONES DE ACCIÓN EN TABLA (Editar / Desactivar)
-══════════════════════════════════════════════════════════════ */
+/* Botones de editar y desactivar en la tabla*/
+
 
 .boton-editar {
     background-color: var(--azul-institucional);
@@ -585,15 +558,11 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   OCULTO
-══════════════════════════════════════════════════════════════ */
+/* Oculto */
 
 .oculto { display: none !important; }
 
-/* ══════════════════════════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════════════════════════ */
+/* Responsive */
 
 @media (max-width: 768px) {
     .encabezado-navegacion { flex-direction: column; gap: 15px; text-align: center; }
@@ -604,9 +573,7 @@ body {
     .cabecera-panel        { flex-direction: column; align-items: flex-start; }
     .fila-botones-formulario { flex-direction: column; }
 }
-/* ══════════════════════════════════════════════════════════════
-   BOTÓN SACAR CITA
-══════════════════════════════════════════════════════════════ */
+/* Sacar la Cita*/
 
 .seccion-sacar-cita {
     background-color: var(--blanco);
@@ -634,9 +601,7 @@ body {
     transform: scale(1.05);
     opacity: 0.9;
 }
-/* ══════════════════════════════════════════════════════════════
-   FLUJO DE CITAS
-══════════════════════════════════════════════════════════════ */
+/* Flujo de Citas */
 
 .pasos-cita {
     display: flex;
@@ -681,7 +646,7 @@ body {
 
 .boton-volver:hover { text-decoration: underline; }
 
-/* RESUMEN MODAL CITA */
+/* Modal del Resumen de la Cita */
 .resumen-cita {
     background-color: var(--gris-fondo);
     border-radius: 12px;
@@ -694,9 +659,7 @@ body {
 
 .resumen-cita p { font-size: 0.95rem; color: #444; }
 
-/* ══════════════════════════════════════════════════════════════
-   PAGO
-══════════════════════════════════════════════════════════════ */
+/* Pago */
 
 .resumen-pago {
     background-color: var(--gris-fondo);
@@ -764,9 +727,7 @@ body {
     background-color: rgba(0, 74, 153, 0.06);
     box-shadow: 0 0 0 3px rgba(0, 74, 153, 0.15);
 }
-/* ══════════════════════════════════════════════════════════════
-   PAGO (pago.html)
-══════════════════════════════════════════════════════════════ */
+/* pago.html*/
 
 .resumen-pago {
     background: #f8f9fa;

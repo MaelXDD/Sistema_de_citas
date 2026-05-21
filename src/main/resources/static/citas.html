@@ -19,7 +19,6 @@
         <a href="/#">Mis Citas</a>
     </nav>
     <div class="botones-acceso" id="zona-sesion">
-        <!-- Se llena dinámicamente según sesión -->
     </div>
 </header>
 
@@ -33,14 +32,14 @@
             </div>
         </div>
 
-        <!-- PASO INDICADOR -->
+        <!-- Indicadores -->
         <div class="pasos-cita">
             <div class="paso-indicador activo" id="ind-paso1">① Especialidad</div>
             <div class="paso-indicador" id="ind-paso2">② Doctor</div>
             <div class="paso-indicador" id="ind-paso3">③ Horario</div>
         </div>
 
-        <!-- PASO 1: TABLA DE ESPECIALIDADES -->
+        <!-- Tabla de Especialidades -->
         <div id="paso1">
             <div class="tabla-responsiva">
                 <table class="tabla-doctores">
@@ -61,7 +60,7 @@
             </div>
         </div>
 
-        <!-- PASO 2: DOCTORES -->
+        <!-- Tabla de Doctores -->
         <div id="paso2" class="oculto">
             <button class="boton-volver" onclick="volverPaso(1)">← Volver a Especialidades</button>
             <h3 class="subtitulo-paso">Doctores disponibles en <span id="nombre-especialidad-sel"></span></h3>
@@ -85,7 +84,7 @@
             </div>
         </div>
 
-        <!-- PASO 3: HORARIOS -->
+        <!-- Tabla de Horarios -->
         <div id="paso3" class="oculto">
             <button class="boton-volver" onclick="volverPaso(2)">← Volver a Doctores</button>
             <h3 class="subtitulo-paso">Horarios del Dr. <span id="nombre-doctor-sel"></span></h3>
@@ -111,7 +110,7 @@
     </div>
 </div>
 
-<!-- MODAL: CONFIRMAR FECHA Y MOTIVO -->
+<!-- Modal para confirmar fecha y motivo -->
 <div id="modal-confirmar-cita" class="capa-fondo-modal">
     <div class="cuadro-emergente">
         <span class="cerrar-ventana" onclick="toggleModal('modal-confirmar-cita')">&times;</span>

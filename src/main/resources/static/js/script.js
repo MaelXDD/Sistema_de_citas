@@ -49,9 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     iniciarModuloPago();
 });
 
-// ══════════════════════════════════════════════════════════════
-//  MÓDULO: SESIÓN GLOBAL
-// ══════════════════════════════════════════════════════════════
+//  Modulo de Sesión Global
 
 function cerrarSesion() {
     sessionStorage.removeItem('paciente');
@@ -100,9 +98,7 @@ function irSacarCita() {
     }
 }
 
-// ══════════════════════════════════════════════════════════════
-//  MÓDULO: REGISTRO
-// ══════════════════════════════════════════════════════════════
+//  Modal de Registro
 
 function configurarFormularioRegistro(form) {
     form.addEventListener('submit', async (e) => {
@@ -156,9 +152,7 @@ function configurarFormularioRegistro(form) {
     });
 }
 
-// ══════════════════════════════════════════════════════════════
-//  MÓDULO: LOGIN
-// ══════════════════════════════════════════════════════════════
+//  Modal del Login
 
 function configurarFormularioLogin(form) {
     form.addEventListener('submit', async (e) => {
@@ -208,9 +202,7 @@ function configurarFormularioLogin(form) {
     });
 }
 
-// ══════════════════════════════════════════════════════════════
-//  MÓDULO: DOCTORES (doctores.html)
-// ══════════════════════════════════════════════════════════════
+//  Doctores.html
 
 function configurarNavegacionVistas() {
     const vistaTabla      = document.getElementById('vistaTabla');
@@ -475,9 +467,7 @@ function configurarFormularioDoctores() {
     });
 }
 
-// ══════════════════════════════════════════════════════════════
-//  MÓDULO: ESPECIALIDADES (especialidades.html)
-// ══════════════════════════════════════════════════════════════
+//  Especialidades.html
 
 function iniciarModuloEspecialidades() {
     const tbody = document.getElementById('tablaEspecialidadesBody');
@@ -673,7 +663,7 @@ function iniciarModuloEspecialidades() {
     cargarTablaEspecialidades();
 }
 
-/*horarios.html*/
+//horarios.html
 
 function iniciarModuloHorarios() {
     const tbody = document.getElementById('tablaHorariosBody');
@@ -693,8 +683,6 @@ function iniciarModuloHorarios() {
     const selectDiaHorario    = document.getElementById('selectDiaHorario');
     const selectTurnoHorario  = document.getElementById('selectTurno');
 
-    // ─── NAVEGACIÓN ────────────────────────────────────────────────────────────
-
     function mostrarFormulario() {
         form.reset();
         cargarDoctoresEnSelector();
@@ -712,21 +700,17 @@ function iniciarModuloHorarios() {
     if (btnCancelar)     btnCancelar.addEventListener('click', ocultarFormulario);
     if (btnRegresarHome) btnRegresarHome.addEventListener('click', () => { location.href = '/index.html'; });
 
-    // ─── CARGAR TABLA ──────────────────────────────────────────────────────────
 
     async function cargarTablaHorarios() {
-        // FIX 1: mostrar estado de carga limpio antes de cada fetch
         tbody.innerHTML = '<tr><td colspan="6" class="celda-estado">Cargando horarios de atención...</td></tr>';
 
         try {
-            // FIX 2: timeout explícito para no quedar colgado si el backend no responde
             const controller = new AbortController();
             const timeoutId  = setTimeout(() => controller.abort(), 8000);
 
             const response = await fetch(API_HORARIOS, { signal: controller.signal });
             clearTimeout(timeoutId);
 
-            // FIX 3: manejar respuestas no-OK con mensaje claro
             if (!response.ok) {
                 throw new Error(`El servidor respondió con estado ${response.status}`);
             }
@@ -740,7 +724,6 @@ function iniciarModuloHorarios() {
 
             tbody.innerHTML = '';
             horarios.forEach(h => {
-                // FIX 4: acceso defensivo a propiedades anidadas con optional chaining
                 const doctorNombre = h.doctor
                     ? `${h.doctor.apellidos ?? ''}, ${h.doctor.nombres ?? ''}`.trim()
                     : 'No asignado';
@@ -771,7 +754,6 @@ function iniciarModuloHorarios() {
                 tbody.appendChild(tr);
             });
 
-            // FIX 5: delegar el evento en tbody para no perder listeners al re-renderizar
             tbody.querySelectorAll('.btn-borrar-horario').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const idHorario = e.currentTarget.getAttribute('data-id');
@@ -780,9 +762,8 @@ function iniciarModuloHorarios() {
             });
 
         } catch (err) {
-            console.error('❌ Error al cargar horarios:', err);
+            console.error('Error al cargar horarios:', err);
 
-            // FIX 6: distinguir timeout vs error de red vs otro error
             let mensajeUsuario = 'Error al cargar los horarios.';
             if (err.name === 'AbortError') {
                 mensajeUsuario = 'El servidor tardó demasiado en responder (timeout). Verifique que Spring Boot esté corriendo en el puerto 8087.';
@@ -796,10 +777,7 @@ function iniciarModuloHorarios() {
         }
     }
 
-    // ─── CARGAR DOCTORES EN SELECTOR ───────────────────────────────────────────
-
     async function cargarDoctoresEnSelector() {
-        // FIX 7: resetear selector con estado de carga antes del fetch
         selectDoctorHorario.innerHTML = '<option value="" disabled selected>Cargando médicos activos...</option>';
         selectDoctorHorario.disabled = true;
 
@@ -824,22 +802,18 @@ function iniciarModuloHorarios() {
             doctores.forEach(doc => {
                 const option = document.createElement('option');
                 option.value = doc.idDoctor;
-                // FIX 8: acceso defensivo a especialidad en el selector también
                 const nombreEsp = doc.especialidad?.nombre ?? 'Sin especialidad';
                 option.textContent = `${doc.apellidos}, ${doc.nombres} (${nombreEsp})`;
                 selectDoctorHorario.appendChild(option);
             });
 
         } catch (err) {
-            console.error('❌ Error al cargar doctores:', err);
+            console.error('Error al cargar doctores:', err);
             selectDoctorHorario.innerHTML = '<option value="" disabled selected>Error al cargar médicos</option>';
         } finally {
-            // FIX 9: siempre re-habilitar el selector aunque falle
             selectDoctorHorario.disabled = false;
         }
     }
-
-    // ─── GUARDAR HORARIO ───────────────────────────────────────────────────────
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -848,7 +822,6 @@ function iniciarModuloHorarios() {
         const diaSemana = selectDiaHorario.value;
         const turno     = selectTurnoHorario.value;
 
-        // FIX 10: validación de campos antes de enviar
         if (!idDoctor || !diaSemana || !turno) {
             Swal.fire({
                 icon: 'warning',
@@ -868,7 +841,6 @@ function iniciarModuloHorarios() {
             horaFin:    `${horaFin}:00`
         };
 
-        // FIX 11: deshabilitar botón para evitar doble submit
         const btnGuardar = document.getElementById('btnGuardar');
         if (btnGuardar) {
             btnGuardar.disabled = true;
@@ -901,7 +873,7 @@ function iniciarModuloHorarios() {
                 });
             }
         } catch (err) {
-            console.error('❌ Error al guardar horario:', err);
+            console.error('Error al guardar horario:', err);
             Swal.fire({
                 icon:               'error',
                 title:              'Fallo de Red',
@@ -909,15 +881,12 @@ function iniciarModuloHorarios() {
                 confirmButtonColor: '#004a99'
             });
         } finally {
-            // FIX 12: re-habilitar botón siempre, aunque falle
             if (btnGuardar) {
                 btnGuardar.disabled = false;
                 btnGuardar.textContent = 'Guardar Horario';
             }
         }
     });
-
-    // ─── ELIMINAR HORARIO ──────────────────────────────────────────────────────
 
     async function eliminarHorario(id) {
         const result = await Swal.fire({
@@ -936,7 +905,6 @@ function iniciarModuloHorarios() {
         try {
             const response = await fetch(`${API_HORARIOS}/${id}`, { method: 'DELETE' });
 
-            // FIX 13: aceptar 200 y 204 como éxito en DELETE
             if (response.ok || response.status === 204) {
                 await cargarTablaHorarios();
                 Swal.fire({
@@ -949,7 +917,7 @@ function iniciarModuloHorarios() {
                 throw new Error(`Estado ${response.status}`);
             }
         } catch (err) {
-            console.error('❌ Error al eliminar horario:', err);
+            console.error('Error al eliminar horario:', err);
             Swal.fire({
                 icon:               'error',
                 title:              'Error de Red',
@@ -959,7 +927,6 @@ function iniciarModuloHorarios() {
         }
     }
 
-    // ─── INICIO ────────────────────────────────────────────────────────────────
     cargarTablaHorarios();
 }
 
@@ -969,22 +936,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ══════════════════════════════════════════════════════════════
-//  MÓDULO: CITAS (citas.html)
-// ══════════════════════════════════════════════════════════════
+//citas.html
 
 function iniciarModuloCitas() {
     const tablaEspBody = document.getElementById('tabla-especialidades-body');
     if (!tablaEspBody) return;
 
-    // Verificar que el paciente esté logueado
     const paciente = JSON.parse(sessionStorage.getItem('paciente'));
     if (!paciente) {
         window.location.href = '/index.html';
         return;
     }
 
-    // Estado del flujo de cita
     let idEspecialidadSel = null;
     let idDoctorSel       = null;
     let idHorarioSel      = null;
@@ -993,7 +956,6 @@ function iniciarModuloCitas() {
     let diaSel            = '';
     let horaSel           = '';
 
-    // ── Navegación entre pasos ──────────────────────────────────
     window.volverPaso = function(numeroPaso) {
         [1, 2, 3].forEach(n => {
             document.getElementById(`paso${n}`).classList.add('oculto');
@@ -1007,7 +969,7 @@ function iniciarModuloCitas() {
         window.volverPaso(numeroPaso);
     }
 
-    // ── PASO 1: Cargar especialidades ───────────────────────────
+    //Cargar especialidades
     async function cargarEspecialidadesCitas() {
         tablaEspBody.innerHTML = '<tr><td colspan="4" class="celda-estado">Cargando especialidades...</td></tr>';
         try {
@@ -1039,7 +1001,7 @@ function iniciarModuloCitas() {
         }
     }
 
-    // ── PASO 2: Cargar doctores por especialidad ────────────────
+    //Cargar doctores por especialidad
     window.seleccionarEspecialidad = async function(idEsp, nombreEsp) {
         idEspecialidadSel = idEsp;
         nombreEspSel      = nombreEsp;
@@ -1056,7 +1018,6 @@ function iniciarModuloCitas() {
             if (!res.ok) throw new Error();
             const todos = await res.json();
 
-            // Filtrar doctores de la especialidad seleccionada
             const filtrados = todos.filter(d =>
                 d.especialidad && d.especialidad.idEspecialidad === idEsp
             );
@@ -1086,7 +1047,7 @@ function iniciarModuloCitas() {
         }
     };
 
-    // ── PASO 3: Cargar horarios por doctor ──────────────────────
+    //Cargar horarios por doctor
     window.seleccionarDoctor = async function(idDoc, nombreDoc) {
         idDoctorSel  = idDoc;
         nombreDocSel = nombreDoc;
@@ -1127,7 +1088,7 @@ function iniciarModuloCitas() {
         }
     };
 
-    // ── Modal: confirmar cita ───────────────────────────────────
+    // Modal de confirmar cita
     window.abrirModalConfirmar = function(idHorario, diaSemana, horaInicio, horaFin) {
         diaSel  = diaSemana;
         horaSel = '';
@@ -1139,7 +1100,7 @@ function iniciarModuloCitas() {
         document.getElementById('res-horario').textContent      = `${horaInicio} - ${horaFin}`;
         document.getElementById('input-motivo').value           = '';
 
-        // Generar slots de 30 minutos
+        // Tiempos de 30 minutos
         const slotsDiv = document.getElementById('slots-horario');
         slotsDiv.innerHTML = '';
 
@@ -1212,7 +1173,6 @@ function iniciarModuloCitas() {
                 const citaCreada = await res.json();
                 toggleModal('modal-confirmar-cita');
 
-                // 👇 Guardar en sessionStorage ANTES de redirigir
                 sessionStorage.setItem('citaPendiente', JSON.stringify({
                     idCita:       citaCreada.idCita,
                     especialidad: nombreEspSel,
@@ -1223,7 +1183,7 @@ function iniciarModuloCitas() {
                     motivo:       motivo || '—'
                 }));
 
-                window.location.href = '/pago.html'; // 👈 redirigir DESPUÉS de guardar
+                window.location.href = '/pago.html';
 
             } else {
                 const err = await res.json().catch(() => ({}));
@@ -1233,10 +1193,7 @@ function iniciarModuloCitas() {
             Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', confirmButtonColor: '#004a99' });
         }
     };
-    // ══════════════════════════════════════════════════════════════
-//  MÓDULO: PAGO (pago.html)
-// ══════════════════════════════════════════════════════════════
-
+    // Pago.html
 
     window.seleccionarMetodo = function(el, metodo) {
         document.querySelectorAll('.tarjeta-metodo').forEach(t => t.classList.remove('seleccionado'));
@@ -1312,7 +1269,6 @@ function iniciarModuloCitas() {
             });
         }
     };
-    // Iniciar cargando las especialidades
     cargarEspecialidadesCitas();
 }
 function iniciarModuloPago() {
