@@ -18,11 +18,19 @@ public class HorarioController {
         this.horarioRepository = horarioRepository;
     }
 
+    // GET /api/horarios → todos los horarios activos con doctor y especialidad
     @GetMapping
-    public List<Horario> listarTodos() {
-        return horarioRepository.listarHorariosConMedicos();
+    public ResponseEntity<List<Horario>> listarTodos() {
+        return ResponseEntity.ok(horarioRepository.findAllActivos());
     }
 
+    // GET /api/horarios/doctor/{idDoctor}
+    @GetMapping("/doctor/{idDoctor}")
+    public ResponseEntity<List<Horario>> porDoctor(@PathVariable Integer idDoctor) {
+        return ResponseEntity.ok(horarioRepository.findActivosByDoctor(idDoctor));
+    }
+
+    // POST /api/horarios
     @PostMapping
     public ResponseEntity<?> asignarHorario(@RequestBody Horario horario) {
         List<Horario> existentes = horarioRepository.findByDoctor_IdDoctorAndDiaSemanaAndActivoTrue(
@@ -39,6 +47,7 @@ public class HorarioController {
         return ResponseEntity.ok(guardado);
     }
 
+    // DELETE /api/horarios/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarHorario(@PathVariable Integer id) {
         horarioRepository.deleteById(id);

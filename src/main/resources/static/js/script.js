@@ -1,5 +1,5 @@
 const API = 'http://localhost:8087';
-
+let horariosActuales = [];
 function toggleModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     iniciarModuloEspecialidades();
     iniciarModuloCitas();
-
+    iniciarModuloPago();
 });
 
 // ══════════════════════════════════════════════════════════════
@@ -1128,45 +1128,75 @@ function iniciarModuloCitas() {
     };
 
     // ── Modal: confirmar cita ───────────────────────────────────
-    window.abrirModalConfirmar = function(idHorario, dia, horaInicio, horaFin) {
+    window.abrirModalConfirmar = function(idHorario, diaSemana, horaInicio, horaFin) {
+        diaSel  = diaSemana;
+        horaSel = '';
         idHorarioSel = idHorario;
-        diaSel       = dia;
-        horaSel      = `${horaInicio} - ${horaFin}`;
 
         document.getElementById('res-especialidad').textContent = nombreEspSel;
         document.getElementById('res-doctor').textContent       = nombreDocSel;
-        document.getElementById('res-dia').textContent          = dia;
-        document.getElementById('res-horario').textContent      = horaSel;
+        document.getElementById('res-dia').textContent          = diaSemana;
+        document.getElementById('res-horario').textContent      = `${horaInicio} - ${horaFin}`;
+        document.getElementById('input-motivo').value           = '';
 
-        // Establecer fecha mínima = hoy
-        const hoy = new Date().toISOString().split('T')[0];
-        document.getElementById('input-fecha-cita').min   = hoy;
-        document.getElementById('input-fecha-cita').value = '';
-        document.getElementById('input-motivo').value     = '';
+        // Generar slots de 30 minutos
+        const slotsDiv = document.getElementById('slots-horario');
+        slotsDiv.innerHTML = '';
+
+        const [h1, m1] = horaInicio.split(':').map(Number);
+        const [h2, m2] = horaFin.split(':').map(Number);
+        const inicio   = h1 * 60 + m1;
+        const fin      = h2 * 60 + m2;
+
+        const toAmPm = t => {
+            const [hh, mm] = t.split(':').map(Number);
+            const ampm = hh >= 12 ? 'pm' : 'am';
+            const h12  = hh % 12 || 12;
+            return `${h12}:${String(mm).padStart(2, '0')} ${ampm}`;
+        };
+
+        for (let min = inicio; min < fin; min += 30) {
+            const hh      = String(Math.floor(min / 60)).padStart(2, '0');
+            const mm      = String(min % 60).padStart(2, '0');
+            const slot    = `${hh}:${mm}`;
+            const minFin  = min + 30;
+            const hhFin   = String(Math.floor(minFin / 60)).padStart(2, '0');
+            const mmFin   = String(minFin % 60).padStart(2, '0');
+            const slotFin = `${hhFin}:${mmFin}`;
+
+            const btn = document.createElement('button');
+            btn.type        = 'button';
+            btn.textContent = `${toAmPm(slot)} - ${toAmPm(slotFin)}`;
+            btn.style.cssText = 'padding:6px 14px; border:2px solid #004a99; border-radius:20px; background:#fff; color:#004a99; cursor:pointer; font-weight:600; transition: all 0.2s;';
+            btn.onclick = () => {
+                document.querySelectorAll('#slots-horario button').forEach(b => {
+                    b.style.background = '#fff';
+                    b.style.color      = '#004a99';
+                });
+                btn.style.background = '#004a99';
+                btn.style.color      = '#fff';
+                horaSel = slot;
+            };
+            slotsDiv.appendChild(btn);
+        }
 
         toggleModal('modal-confirmar-cita');
     };
 
-    // ── Confirmar y redirigir al pago ───────────────────────────
     window.confirmarYPagar = async function() {
-        const fecha  = document.getElementById('input-fecha-cita').value;
         const motivo = document.getElementById('input-motivo').value.trim();
+        const fecha  = new Date().toISOString().split('T')[0];
 
-        if (!fecha) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Fecha requerida',
-                text: 'Por favor selecciona una fecha para tu cita.',
-                confirmButtonColor: '#004a99'
-            });
+        if (!horaSel) {
+            Swal.fire({ icon: 'warning', title: 'Hora requerida', text: 'Por favor elige tu hora de atención.', confirmButtonColor: '#004a99' });
             return;
         }
 
         const payload = {
             paciente:  { idPaciente: paciente.idPaciente },
             doctor:    { idDoctor: idDoctorSel },
-            horario:   { idHorario: idHorarioSel },
             fechaCita: fecha,
+            horaCita:  horaSel,
             motivo:    motivo || null,
             estado:    'PENDIENTE'
         };
@@ -1182,7 +1212,7 @@ function iniciarModuloCitas() {
                 const citaCreada = await res.json();
                 toggleModal('modal-confirmar-cita');
 
-                // Guardar datos de la cita en sessionStorage para la página de pago
+                // 👇 Guardar en sessionStorage ANTES de redirigir
                 sessionStorage.setItem('citaPendiente', JSON.stringify({
                     idCita:       citaCreada.idCita,
                     especialidad: nombreEspSel,
@@ -1193,13 +1223,83 @@ function iniciarModuloCitas() {
                     motivo:       motivo || '—'
                 }));
 
-                window.location.href = '/pago.html';
+                window.location.href = '/pago.html'; // 👈 redirigir DESPUÉS de guardar
+
+            } else {
+                const err = await res.json().catch(() => ({}));
+                Swal.fire({ icon: 'error', title: 'Error al registrar cita', text: err.mensaje || 'No se pudo guardar la cita.', confirmButtonColor: '#004a99' });
+            }
+        } catch {
+            Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', confirmButtonColor: '#004a99' });
+        }
+    };
+    // ══════════════════════════════════════════════════════════════
+//  MÓDULO: PAGO (pago.html)
+// ══════════════════════════════════════════════════════════════
+
+
+    window.seleccionarMetodo = function(el, metodo) {
+        document.querySelectorAll('.tarjeta-metodo').forEach(t => t.classList.remove('seleccionado'));
+        el.classList.add('seleccionado');
+        document.getElementById('metodo-seleccionado').value = metodo;
+    };
+
+    window.procesarPago = async function() {
+        const metodo = document.getElementById('metodo-seleccionado').value;
+
+        if (!metodo) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Método requerido',
+                text: 'Por favor selecciona un método de pago.',
+                confirmButtonColor: '#004a99'
+            });
+            return;
+        }
+
+        const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
+        if (!cita) {
+            window.location.href = '/citas.html';
+            return;
+        }
+
+        const payload = {
+            cita:          { idCita: cita.idCita },
+            metodoPago:    metodo,
+            monto:         30.00,
+            estado:        'COMPLETADO'
+        };
+
+        try {
+            const res = await fetch(`${API}/api/pagos`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                sessionStorage.removeItem('citaPendiente');
+                Swal.fire({
+                    icon:              'success',
+                    title:             '¡Pago Confirmado!',
+                    html:              `
+                    <p><strong>Especialidad:</strong> ${cita.especialidad}</p>
+                    <p><strong>Doctor:</strong> ${cita.doctor}</p>
+                    <p><strong>Fecha:</strong> ${cita.fecha}</p>
+                    <p><strong>Hora:</strong> ${cita.horario}</p>
+                    <p style="margin-top:10px; color:#004a99; font-weight:700;">Método: ${metodo} — S/ 30.00</p>
+                `,
+                    confirmButtonText:  'Ver mis citas',
+                    confirmButtonColor: '#004a99'
+                }).then(() => {
+                    window.location.href = '/mis-citas.html';
+                });
             } else {
                 const err = await res.json().catch(() => ({}));
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error al registrar cita',
-                    text: err.mensaje || 'No se pudo guardar la cita.',
+                    title: 'Error al procesar pago',
+                    text: err.mensaje || 'No se pudo registrar el pago.',
                     confirmButtonColor: '#004a99'
                 });
             }
@@ -1212,7 +1312,89 @@ function iniciarModuloCitas() {
             });
         }
     };
-
     // Iniciar cargando las especialidades
     cargarEspecialidadesCitas();
 }
+function iniciarModuloPago() {
+    const contenedor = document.getElementById('pago-especialidad');
+    if (!contenedor) return;
+
+    const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
+
+    if (!cita) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Sin datos de cita',
+            text: 'No se encontró ninguna cita pendiente. Serás redirigido.',
+            confirmButtonColor: '#004a99'
+        }).then(() => {
+            window.location.href = '/citas.html';
+        });
+        return;
+    }
+
+    document.getElementById('pago-especialidad').textContent = cita.especialidad ?? '—';
+    document.getElementById('pago-doctor').textContent       = cita.doctor       ?? '—';
+    document.getElementById('pago-fecha').textContent        = cita.fecha        ?? '—';
+    document.getElementById('pago-hora').textContent         = cita.horario      ?? '—';
+}
+
+window.seleccionarMetodo = function(el, metodo) {
+    document.querySelectorAll('.tarjeta-metodo').forEach(t => t.classList.remove('seleccionado'));
+    el.classList.add('seleccionado');
+    document.getElementById('metodo-seleccionado').value = metodo;
+};
+
+window.procesarPago = async function() {
+    const metodo = document.getElementById('metodo-seleccionado').value;
+
+    if (!metodo) {
+        Swal.fire({ icon: 'warning', title: 'Método requerido', text: 'Por favor selecciona un método de pago.', confirmButtonColor: '#004a99' });
+        return;
+    }
+
+    const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
+    if (!cita) {
+        window.location.href = '/citas.html';
+        return;
+    }
+
+    const payload = {
+        cita:       { idCita: cita.idCita },
+        metodoPago: metodo,
+        monto:      30.00,
+        estadoPago:     'COMPLETADO'
+    };
+
+    try {
+        const res = await fetch(`${API}/api/pagos`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            sessionStorage.removeItem('citaPendiente');
+            Swal.fire({
+                icon:             'success',
+                title:            '¡Pago Confirmado!',
+                html:             `
+                    <p><strong>Especialidad:</strong> ${cita.especialidad}</p>
+                    <p><strong>Doctor:</strong> ${cita.doctor}</p>
+                    <p><strong>Fecha:</strong> ${cita.fecha}</p>
+                    <p><strong>Hora:</strong> ${cita.horario}</p>
+                    <p style="margin-top:10px; color:#004a99; font-weight:700;">Método: ${metodo} — S/ 30.00</p>
+                `,
+                confirmButtonText:  'Ver mis citas',
+                confirmButtonColor: '#004a99'
+            }).then(() => {
+                window.location.href = '/mis-citas.html';
+            });
+        } else {
+            const err = await res.json().catch(() => ({}));
+            Swal.fire({ icon: 'error', title: 'Error al procesar pago', text: err.mensaje || 'No se pudo registrar el pago.', confirmButtonColor: '#004a99' });
+        }
+    } catch {
+        Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', confirmButtonColor: '#004a99' });
+    }
+};

@@ -16,5 +16,7 @@ public interface HorarioRepository extends JpaRepository<Horario, Integer> {
     @Query("SELECT h FROM Horario h JOIN FETCH h.doctor d WHERE d.idDoctor = :idDoctor AND h.activo = true")
     List<Horario> findActivosByDoctor(@Param("idDoctor") Integer idDoctor);
 
+    @Query("SELECT h FROM Horario h JOIN FETCH h.doctor d JOIN FETCH d.especialidad WHERE h.activo = true")
+    List<Horario> findAllActivos();
     List<Horario> findByDoctor_IdDoctorAndDiaSemanaAndActivoTrue(Integer idDoctor, String diaSemana);
 }

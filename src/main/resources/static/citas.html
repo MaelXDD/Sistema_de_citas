@@ -121,10 +121,12 @@
             <p><strong>Doctor:</strong> <span id="res-doctor"></span></p>
             <p><strong>Día:</strong> <span id="res-dia"></span></p>
             <p><strong>Horario:</strong> <span id="res-horario"></span></p>
+            <div style="margin-top:12px;">
+                <label class="etiqueta-selector"><strong>Elige tu hora de atención:</strong></label>
+                <div id="slots-horario" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
+            </div>
         </div>
         <div class="formulario-estandar" style="margin-top:20px;">
-            <label class="etiqueta-selector">Fecha de la cita</label>
-            <input type="date" id="input-fecha-cita">
             <label class="etiqueta-selector">Motivo (opcional)</label>
             <textarea id="input-motivo" placeholder="Describe brevemente tu motivo de consulta..." rows="3"></textarea>
             <button class="boton-accion-total" onclick="confirmarYPagar()">Ir al Pago →</button>
