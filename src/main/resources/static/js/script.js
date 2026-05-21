@@ -84,7 +84,8 @@ function renderizarHeaderSesion() {
             nav.innerHTML = `
                 <a href="/index.html">Inicio</a>
                 <a href="/especialidades.html">Especialidades</a>
-                <a href="/doctores.html">Doctores</a>`;
+                <a href="/doctores.html">Doctores</a>
+                <a href="/horarios.html">Horarios</a>`;
         }
     }
 }
@@ -680,7 +681,6 @@ function iniciarModuloHorarios() {
     const form            = document.getElementById('horarioForm');
 
     const selectDoctorHorario = document.getElementById('selectDoctor');
-    const selectDiaHorario    = document.getElementById('selectDiaHorario');
     const selectTurnoHorario  = document.getElementById('selectTurno');
 
     function mostrarFormulario() {
@@ -819,14 +819,16 @@ function iniciarModuloHorarios() {
         e.preventDefault();
 
         const idDoctor  = selectDoctorHorario.value;
-        const diaSemana = selectDiaHorario.value;
         const turno     = selectTurnoHorario.value;
 
-        if (!idDoctor || !diaSemana || !turno) {
+        const checkboxesDias = document.querySelectorAll('input[name="diasSemana"]:checked');
+        const diasSeleccionados = Array.from(checkboxesDias).map(cb => cb.value);
+
+        if (!idDoctor || diasSeleccionados.length === 0 || !turno) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Campos incompletos',
-                text: 'Por favor complete todos los campos antes de guardar.',
+                text: 'Por favor seleccione el médico, al menos un día y el turno laboral.',
                 confirmButtonColor: '#004a99'
             });
             return;
@@ -835,8 +837,8 @@ function iniciarModuloHorarios() {
         const [horaInicio, horaFin] = turno.split('-');
 
         const horarioPayload = {
-            doctor:     { idDoctor: parseInt(idDoctor) },
-            diaSemana:  diaSemana,
+            idDoctor:   parseInt(idDoctor),
+            diasSemana: diasSeleccionados,
             horaInicio: `${horaInicio}:00`,
             horaFin:    `${horaFin}:00`
         };
@@ -856,21 +858,34 @@ function iniciarModuloHorarios() {
 
             if (response.ok) {
                 ocultarFormulario();
+                document.querySelectorAll('input[name="diasSemana"]').forEach(cb => cb.checked = false);
+
                 await cargarTablaHorarios();
                 Swal.fire({
                     icon:               'success',
-                    title:              '¡Turno Asignado!',
-                    text:               'El horario médico fue guardado con éxito.',
+                    title:              '¡Turnos Asignados!',
+                    text:               'Los horarios médicos se registraron con éxito.',
                     confirmButtonColor: '#004a99'
                 });
             } else {
-                const mensajeError = await response.text();
-                Swal.fire({
-                    icon:               'error',
-                    title:              'No se pudo guardar',
-                    text:               mensajeError || 'El doctor ya tiene un turno ese mismo día.',
-                    confirmButtonColor: '#004a99'
-                });
+                try {
+                    const errorObj = await response.json();
+
+                    Swal.fire({
+                        icon:               'error',
+                        title:              'Conflicto de Horario',
+                        text:               errorObj.mensaje || 'El doctor ya tiene un turno asignado en alguno de los días elegidos.',
+                        confirmButtonColor: '#004a99'
+                    });
+                } catch (jsonErr) {
+                    const textoError = await response.text();
+                    Swal.fire({
+                        icon:               'error',
+                        title:              'No se pudo guardar',
+                        text:               textoError || 'Hubo un conflicto con los turnos seleccionados.',
+                        confirmButtonColor: '#004a99'
+                    });
+                }
             }
         } catch (err) {
             console.error('Error al guardar horario:', err);
@@ -955,7 +970,6 @@ function iniciarModuloCitas() {
     let nombreDocSel      = '';
     let diaSel            = '';
     let horaSel           = '';
-    let fechaSel          = '';
 
     window.volverPaso = function(numeroPaso) {
         [1, 2, 3].forEach(n => {
@@ -970,7 +984,7 @@ function iniciarModuloCitas() {
         window.volverPaso(numeroPaso);
     }
 
-    //Cargar especialidades
+    // Cargar especialidades activas para la cita
     async function cargarEspecialidadesCitas() {
         tablaEspBody.innerHTML = '<tr><td colspan="4" class="celda-estado">Cargando especialidades...</td></tr>';
         try {
@@ -1002,13 +1016,12 @@ function iniciarModuloCitas() {
         }
     }
 
-    //Cargar doctores por especialidad
+    // Seleccionar la especialidad y listar doctores de esa rama
     window.seleccionarEspecialidad = async function(idEsp, nombreEsp) {
         idEspecialidadSel = idEsp;
         nombreEspSel      = nombreEsp;
 
         document.getElementById('nombre-especialidad-sel').textContent = nombreEsp;
-
         const tablaDocBody = document.getElementById('tabla-doctores-body');
         tablaDocBody.innerHTML = '<tr><td colspan="5" class="celda-estado">Cargando doctores...</td></tr>';
 
@@ -1048,13 +1061,12 @@ function iniciarModuloCitas() {
         }
     };
 
-    //Cargar horarios por doctor
+    // Seleccionar doctor y jalar sus turnos disponibles
     window.seleccionarDoctor = async function(idDoc, nombreDoc) {
         idDoctorSel  = idDoc;
         nombreDocSel = nombreDoc;
 
         document.getElementById('nombre-doctor-sel').textContent = nombreDoc;
-
         const tablaHorBody = document.getElementById('tabla-horarios-body');
         tablaHorBody.innerHTML = '<tr><td colspan="4" class="celda-estado">Cargando horarios...</td></tr>';
 
@@ -1089,10 +1101,10 @@ function iniciarModuloCitas() {
         }
     };
 
-    // Modal de confirmar cita
-    window.abrirModalConfirmar = async function(idHorario, diaSemana, horaInicio, horaFin) {
-        diaSel       = diaSemana;
-        horaSel      = '';
+    // Desplegar bloques de tiempo de 30 minutos al pulsar Reservar
+    window.abrirModalConfirmar = function(idHorario, diaSemana, horaInicio, horaFin) {
+        diaSel  = diaSemana;
+        horaSel = '';
         idHorarioSel = idHorario;
 
         document.getElementById('res-especialidad').textContent = nombreEspSel;
@@ -1101,29 +1113,6 @@ function iniciarModuloCitas() {
         document.getElementById('res-horario').textContent      = `${horaInicio} - ${horaFin}`;
         document.getElementById('input-motivo').value           = '';
 
-        // Calcular fecha más próxima que coincida con el día
-        const diasMap = ['DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'];
-        const hoy = new Date();
-        let fechaProxima = new Date(hoy);
-        for (let i = 0; i <= 6; i++) {
-            const candidata = new Date(hoy);
-            candidata.setDate(hoy.getDate() + i);
-            if (diasMap[candidata.getDay()] === diaSemana) {
-                fechaProxima = candidata;
-                break;
-            }
-        }
-        const fechaStr = fechaProxima.toISOString().split('T')[0];
-        fechaSel = fechaStr;
-
-        // Obtener horas ocupadas
-        let horasOcupadas = [];
-        try {
-            const res = await fetch(`${API}/api/citas/ocupadas?idDoctor=${idDoctorSel}&fecha=${fechaStr}`);
-            horasOcupadas = await res.json();
-        } catch (e) { /* si falla no bloqueamos nada */ }
-
-        // Generar slots de 30 min
         const slotsDiv = document.getElementById('slots-horario');
         slotsDiv.innerHTML = '';
 
@@ -1143,36 +1132,24 @@ function iniciarModuloCitas() {
             const hh      = String(Math.floor(min / 60)).padStart(2, '0');
             const mm      = String(min % 60).padStart(2, '0');
             const slot    = `${hh}:${mm}`;
-            const slotBD  = slot;
             const minFin  = min + 30;
             const hhFin   = String(Math.floor(minFin / 60)).padStart(2, '0');
             const mmFin   = String(minFin % 60).padStart(2, '0');
             const slotFin = `${hhFin}:${mmFin}`;
 
-            const ocupado = horasOcupadas.includes(slotBD);
-
             const btn = document.createElement('button');
             btn.type        = 'button';
             btn.textContent = `${toAmPm(slot)} - ${toAmPm(slotFin)}`;
-
-            if (ocupado) {
-                btn.disabled      = true;
-                btn.style.cssText = 'padding:6px 14px; border:2px solid #dc2626; border-radius:20px; background:#fee2e2; color:#dc2626; cursor:not-allowed; font-weight:600; text-decoration:line-through;';
-            } else {
-                btn.style.cssText = 'padding:6px 14px; border:2px solid #004a99; border-radius:20px; background:#fff; color:#004a99; cursor:pointer; font-weight:600; transition: all 0.2s;';
-                btn.onclick = () => {
-                    document.querySelectorAll('#slots-horario button').forEach(b => {
-                        if (!b.disabled) {
-                            b.style.background = '#fff';
-                            b.style.color      = '#004a99';
-                            b.style.border     = '2px solid #004a99';
-                        }
-                    });
-                    btn.style.background = '#004a99';
-                    btn.style.color      = '#fff';
-                    horaSel = slot;
-                };
-            }
+            btn.style.cssText = 'padding:6px 14px; border:2px solid #004a99; border-radius:20px; background:#fff; color:#004a99; cursor:pointer; font-weight:600; transition: all 0.2s;';
+            btn.onclick = () => {
+                document.querySelectorAll('#slots-horario button').forEach(b => {
+                    b.style.background = '#fff';
+                    b.style.color      = '#004a99';
+                });
+                btn.style.background = '#004a99';
+                btn.style.color      = '#fff';
+                horaSel = slot;
+            };
             slotsDiv.appendChild(btn);
         }
 
@@ -1181,7 +1158,7 @@ function iniciarModuloCitas() {
 
     window.confirmarYPagar = async function() {
         const motivo = document.getElementById('input-motivo').value.trim();
-        const fecha = fechaSel;
+        const fecha  = new Date().toISOString().split('T')[0];
 
         if (!horaSel) {
             Swal.fire({ icon: 'warning', title: 'Hora requerida', text: 'Por favor elige tu hora de atención.', confirmButtonColor: '#004a99' });
@@ -1228,82 +1205,7 @@ function iniciarModuloCitas() {
             Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', confirmButtonColor: '#004a99' });
         }
     };
-    // Pago.html
 
-    window.seleccionarMetodo = function(el, metodo) {
-        document.querySelectorAll('.tarjeta-metodo').forEach(t => t.classList.remove('seleccionado'));
-        el.classList.add('seleccionado');
-        document.getElementById('metodo-seleccionado').value = metodo;
-    };
-
-    window.procesarPago = async function() {
-        const metodo = document.getElementById('metodo-seleccionado').value;
-
-        if (!metodo) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Método requerido',
-                text: 'Por favor selecciona un método de pago.',
-                confirmButtonColor: '#004a99'
-            });
-            return;
-        }
-
-        const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
-        if (!cita) {
-            window.location.href = '/citas.html';
-            return;
-        }
-
-        const payload = {
-            cita:          { idCita: cita.idCita },
-            metodoPago:    metodo,
-            monto:         30.00,
-            estado:        'COMPLETADO'
-        };
-
-        try {
-            const res = await fetch(`${API}/api/pagos`, {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                sessionStorage.removeItem('citaPendiente');
-                Swal.fire({
-                    icon:              'success',
-                    title:             '¡Pago Confirmado!',
-                    html:              `
-                    <p><strong>Especialidad:</strong> ${cita.especialidad}</p>
-                    <p><strong>Doctor:</strong> ${cita.doctor}</p>
-                    <p><strong>Fecha:</strong> ${cita.fecha}</p>
-                    <p><strong>Hora:</strong> ${cita.horario}</p>
-                    <p style="margin-top:10px; color:#004a99; font-weight:700;">Método: ${metodo} — S/ 30.00</p>
-                `,
-                    confirmButtonText:  'Ver mis citas',
-                    confirmButtonColor: '#004a99'
-                }).then(() => {
-                    window.location.href = '/mis-citas.html';
-                });
-            } else {
-                const err = await res.json().catch(() => ({}));
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al procesar pago',
-                    text: err.mensaje || 'No se pudo registrar el pago.',
-                    confirmButtonColor: '#004a99'
-                });
-            }
-        } catch {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error de conexión',
-                text: 'No se pudo conectar con el servidor.',
-                confirmButtonColor: '#004a99'
-            });
-        }
-    };
     cargarEspecialidadesCitas();
 }
 function iniciarModuloPago() {

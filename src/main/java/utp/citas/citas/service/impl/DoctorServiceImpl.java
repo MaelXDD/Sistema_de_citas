@@ -12,14 +12,16 @@ import utp.citas.citas.repository.HorarioRepository;
 import utp.citas.citas.service.DoctorService;
 import utp.citas.citas.repository.CitaRepository;
 
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
 
     private final DoctorRepository doctorRepository;
-    private final EspecialidadRepository  especialidadRepository;
+    private final EspecialidadRepository especialidadRepository;
     private final HorarioRepository horarioRepository;
     private final CitaRepository citaRepository;
 
@@ -145,5 +147,41 @@ public class DoctorServiceImpl implements DoctorService {
     public List<Horario> obtenerHorariosPorDia(Integer idDoctor, String diaSemana) {
         buscarPorId(idDoctor);
         return horarioRepository.findByDoctor_IdDoctorAndDiaSemanaAndActivoTrue(idDoctor, diaSemana.toUpperCase());
+    }
+
+    // Selección multiple
+    @Override
+    @Transactional
+    public void registrarHorariosMultiplesRaw(Map<String, Object> payload) {
+        Integer idDoctor = (Integer) payload.get("idDoctor");
+        List<String> diasSemana = (List<String>) payload.get("diasSemana");
+
+        LocalTime horaInicio = LocalTime.parse((String) payload.get("horaInicio"));
+        LocalTime horaFin = LocalTime.parse((String) payload.get("horaFin"));
+
+        if (diasSemana == null || diasSemana.isEmpty()) {
+            throw new IllegalArgumentException("Debe seleccionar al menos un día de la semana.");
+        }
+
+        Doctor doctor = buscarPorId(idDoctor);
+        for (String dia : diasSemana) {
+            List<Horario> existentes = horarioRepository.findByDoctor_IdDoctorAndDiaSemanaAndActivoTrue(
+                    doctor.getIdDoctor(),
+                    dia
+            );
+
+            if (!existentes.isEmpty()) {
+                throw new IllegalArgumentException("El especialista médico ya cuenta con un turno asignado para el día: " + dia);
+            }
+
+            Horario nuevoHorario = new Horario();
+            nuevoHorario.setDoctor(doctor);
+            nuevoHorario.setDiaSemana(dia);
+            nuevoHorario.setHoraInicio(horaInicio);
+            nuevoHorario.setHoraFin(horaFin);
+            nuevoHorario.setActivo(true);
+
+            horarioRepository.save(nuevoHorario);
+        }
     }
 }

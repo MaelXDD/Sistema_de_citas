@@ -17,7 +17,7 @@
         <a href="/index.html">Inicio</a>
         <a href="/especialidades.html">Especialidades</a>
         <a href="/doctores.html">Doctores</a>
-        <a href="/horarios.html" class="enlace-activo">Horarios</a>
+        <a href="/horarios.html">Horarios</a>
     </nav>
     <div class="botones-acceso">
         <button class="boton-blanco" id="btnRegresarHome">Regresar</button>
@@ -73,16 +73,15 @@
             </div>
 
             <div class="contenedor-selector">
-                <label class="etiqueta-selector" for="selectDiaHorario">Día de la Semana:</label>
-                <select id="selectDiaHorario" class="selector-estandar" required>
-                    <option value="" disabled selected>Seleccione el día...</option>
-                    <option value="Lunes">Lunes</option>
-                    <option value="Martes">Martes</option>
-                    <option value="Miércoles">Miércoles</option>
-                    <option value="Jueves">Jueves</option>
-                    <option value="Viernes">Viernes</option>
-                    <option value="Sábado">Sábado</option>
-                </select>
+                <label class="etiqueta-selector">Días de la Semana (Selección Múltiple):</label>
+                <div class="grupo-checkbox-dias">
+                    <label class="opcion-checkbox"><input type="checkbox" name="diasSemana" value="Lunes"> Lunes</label>
+                    <label class="opcion-checkbox"><input type="checkbox" name="diasSemana" value="Martes"> Martes</label>
+                    <label class="opcion-checkbox"><input type="checkbox" name="diasSemana" value="Miércoles"> Miércoles</label>
+                    <label class="opcion-checkbox"><input type="checkbox" name="diasSemana" value="Jueves"> Jueves</label>
+                    <label class="opcion-checkbox"><input type="checkbox" name="diasSemana" value="Viernes"> Viernes</label>
+                    <label class="opcion-checkbox"><input type="checkbox" name="diasSemana" value="Sábado"> Sábado</label>
+                </div>
             </div>
 
             <div class="contenedor-selector">
@@ -90,7 +89,7 @@
                 <select id="selectTurno" class="selector-estandar" required>
                     <option value="" disabled selected>Seleccione el turno continuo...</option>
                     <option value="07:00-13:00">Turno Mañana (07:00 AM - 01:00 PM)</option>
-                    <option value="08:00-14:00">Turno Intermedio (11:00 AM - 05:00 PM)</option>
+                    <option value="11:00-17:00">Turno Intermedio (11:00 AM - 05:00 PM)</option>
                     <option value="13:00-19:00">Turno Tarde (01:00 PM - 07:00 PM)</option>
                 </select>
             </div>
