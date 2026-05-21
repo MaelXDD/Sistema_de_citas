@@ -1102,9 +1102,9 @@ function iniciarModuloCitas() {
     };
 
     // Desplegar bloques de tiempo de 30 minutos al pulsar Reservar
-    window.abrirModalConfirmar = function(idHorario, diaSemana, horaInicio, horaFin) {
-        diaSel  = diaSemana;
-        horaSel = '';
+    window.abrirModalConfirmar = async function(idHorario, diaSemana, horaInicio, horaFin) {
+        diaSel       = diaSemana;
+        horaSel      = '';
         idHorarioSel = idHorario;
 
         document.getElementById('res-especialidad').textContent = nombreEspSel;
@@ -1113,6 +1113,52 @@ function iniciarModuloCitas() {
         document.getElementById('res-horario').textContent      = `${horaInicio} - ${horaFin}`;
         document.getElementById('input-motivo').value           = '';
 
+        // Calcular fecha más próxima que coincida con el día
+        // Calcular fecha más próxima que coincida con el día
+        const diasMap = ['DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'];
+        const hoy = new Date();
+        let fechaStr = '';
+
+        const normalizar = str => str.toUpperCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim();
+
+        for (let i = 0; i <= 13; i++) {
+            const candidata    = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + i);
+            const diaCandidato = diasMap[candidata.getDay()];
+
+            if (normalizar(diaCandidato) === normalizar(diaSemana)) {
+                const y = candidata.getFullYear();
+                const m = String(candidata.getMonth() + 1).padStart(2, '0');
+                const d = String(candidata.getDate()).padStart(2, '0');
+                fechaStr = `${y}-${m}-${d}`;
+                break;
+            }
+        }
+
+        fechaSel = fechaStr;
+        console.log('Día:', diaSemana, '→ Fecha:', fechaStr);
+
+        fechaSel = fechaStr;
+        console.log('Día buscado:', diaSemana, '| Fecha calculada:', fechaStr);
+
+// Obtener horas ocupadas del backend
+        let horasOcupadas = [];
+        if (fechaStr) {
+            try {
+                const res = await fetch(`${API}/api/citas/ocupadas?idDoctor=${idDoctorSel}&fecha=${fechaStr}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    horasOcupadas = Array.isArray(data) ? data : [];
+                }
+                console.log('Horas ocupadas:', horasOcupadas);
+            } catch (e) {
+                console.error('Error al obtener horas ocupadas:', e);
+            }
+        }
+
+        // Generar slots de 30 min
         const slotsDiv = document.getElementById('slots-horario');
         slotsDiv.innerHTML = '';
 
@@ -1137,19 +1183,30 @@ function iniciarModuloCitas() {
             const mmFin   = String(minFin % 60).padStart(2, '0');
             const slotFin = `${hhFin}:${mmFin}`;
 
+            const ocupado = horasOcupadas.includes(slot);
+            console.log(`Slot ${slot} ocupado:`, ocupado); // para debug
+
             const btn = document.createElement('button');
             btn.type        = 'button';
             btn.textContent = `${toAmPm(slot)} - ${toAmPm(slotFin)}`;
-            btn.style.cssText = 'padding:6px 14px; border:2px solid #004a99; border-radius:20px; background:#fff; color:#004a99; cursor:pointer; font-weight:600; transition: all 0.2s;';
-            btn.onclick = () => {
-                document.querySelectorAll('#slots-horario button').forEach(b => {
-                    b.style.background = '#fff';
-                    b.style.color      = '#004a99';
-                });
-                btn.style.background = '#004a99';
-                btn.style.color      = '#fff';
-                horaSel = slot;
-            };
+
+            if (ocupado) {
+                btn.disabled      = true;
+                btn.style.cssText = 'padding:6px 14px; border:2px solid #dc2626; border-radius:20px; background:#fee2e2; color:#dc2626; cursor:not-allowed; font-weight:600; text-decoration:line-through;';
+            } else {
+                btn.style.cssText = 'padding:6px 14px; border:2px solid #004a99; border-radius:20px; background:#fff; color:#004a99; cursor:pointer; font-weight:600; transition: all 0.2s;';
+                btn.onclick = () => {
+                    document.querySelectorAll('#slots-horario button').forEach(b => {
+                        if (!b.disabled) {
+                            b.style.background = '#fff';
+                            b.style.color      = '#004a99';
+                        }
+                    });
+                    btn.style.background = '#004a99';
+                    btn.style.color      = '#fff';
+                    horaSel = slot;
+                };
+            }
             slotsDiv.appendChild(btn);
         }
 
@@ -1158,7 +1215,7 @@ function iniciarModuloCitas() {
 
     window.confirmarYPagar = async function() {
         const motivo = document.getElementById('input-motivo').value.trim();
-        const fecha  = new Date().toISOString().split('T')[0];
+        const fecha = fechaSel;
 
         if (!horaSel) {
             Swal.fire({ icon: 'warning', title: 'Hora requerida', text: 'Por favor elige tu hora de atención.', confirmButtonColor: '#004a99' });
