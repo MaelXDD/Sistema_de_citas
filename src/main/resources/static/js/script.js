@@ -1337,6 +1337,18 @@ function iniciarModuloPago() {
     document.getElementById('pago-doctor').textContent       = cita.doctor       ?? '—';
     document.getElementById('pago-fecha').textContent        = cita.fecha        ?? '—';
     document.getElementById('pago-hora').textContent         = cita.horario      ?? '—';
+
+    // Precio según especialidad
+    const precios = {
+        'Cardiología':   120.00,
+        'Pediatría':      80.00,
+        'Traumatología':  90.00,
+        'Dermatología':   85.00,
+        'Neurología':    110.00
+    };
+
+    const precio = precios[cita.especialidad] ?? 30.00;
+    document.querySelector('.fila-resumen.total strong:last-child').textContent = `S/ ${precio.toFixed(2)}`;
 }
 
 window.seleccionarMetodo = function(el, metodo) {
@@ -1349,7 +1361,12 @@ window.procesarPago = async function() {
     const metodo = document.getElementById('metodo-seleccionado').value;
 
     if (!metodo) {
-        Swal.fire({ icon: 'warning', title: 'Método requerido', text: 'Por favor selecciona un método de pago.', confirmButtonColor: '#004a99' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Método requerido',
+            text: 'Por favor selecciona un método de pago.',
+            confirmButtonColor: '#004a99'
+        });
         return;
     }
 
@@ -1359,11 +1376,21 @@ window.procesarPago = async function() {
         return;
     }
 
+    const precios = {
+        'Cardiología':   120.00,
+        'Pediatría':      80.00,
+        'Traumatología':  90.00,
+        'Dermatología':   85.00,
+        'Neurología':    110.00
+    };
+
+    const monto = precios[cita.especialidad] ?? 30.00;
+
     const payload = {
         cita:       { idCita: cita.idCita },
         metodoPago: metodo,
-        monto:      30.00,
-        estadoPago:     'COMPLETADO'
+        monto:      monto,
+        estadoPago: 'COMPLETADO'
     };
 
     try {
@@ -1383,7 +1410,7 @@ window.procesarPago = async function() {
                     <p><strong>Doctor:</strong> ${cita.doctor}</p>
                     <p><strong>Fecha:</strong> ${cita.fecha}</p>
                     <p><strong>Hora:</strong> ${cita.horario}</p>
-                    <p style="margin-top:10px; color:#004a99; font-weight:700;">Método: ${metodo} — S/ 30.00</p>
+                    <p style="margin-top:10px; color:#004a99; font-weight:700;">Método: ${metodo} — S/ ${monto.toFixed(2)}</p>
                 `,
                 confirmButtonText:  'Ver mis citas',
                 confirmButtonColor: '#004a99'
@@ -1392,9 +1419,19 @@ window.procesarPago = async function() {
             });
         } else {
             const err = await res.json().catch(() => ({}));
-            Swal.fire({ icon: 'error', title: 'Error al procesar pago', text: err.mensaje || 'No se pudo registrar el pago.', confirmButtonColor: '#004a99' });
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al procesar pago',
+                text: err.mensaje || 'No se pudo registrar el pago.',
+                confirmButtonColor: '#004a99'
+            });
         }
     } catch {
-        Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', confirmButtonColor: '#004a99' });
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor.',
+            confirmButtonColor: '#004a99'
+        });
     }
 };
