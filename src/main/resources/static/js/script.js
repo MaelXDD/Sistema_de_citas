@@ -16,6 +16,7 @@ window.onclick = function(event) {
 document.addEventListener('DOMContentLoaded', () => {
 
     renderizarHeaderSesion();
+    iniciarModuloMisCitas();
 
     const logotipoGlobal = document.querySelector('.encabezado-navegacion .logotipo');
     if (logotipoGlobal) {
@@ -72,7 +73,7 @@ function renderizarHeaderSesion() {
             nav.innerHTML = `
                 <a href="/index.html">Inicio</a>
                 <a href="/citas.html">Sacar Cita</a>
-                <a href="/mis-citas.html">Mis Citas</a>`;
+                <a href="/miscitas.html">Mis Citas</a>`;
         }
     } else {
         if (zona) {
@@ -1365,7 +1366,7 @@ window.procesarPago = async function() {
                 confirmButtonText:  'Ver mis citas',
                 confirmButtonColor: '#004a99'
             }).then(() => {
-                window.location.href = '/mis-citas.html';
+                window.location.href = '/miscitas.html';
             });
         } else {
             const err = await res.json().catch(() => ({}));
@@ -1385,3 +1386,170 @@ window.procesarPago = async function() {
         });
     }
 };
+
+// ==========================================
+// MIS CITAS
+// ==========================================
+
+function iniciarModuloMisCitas() {
+
+    const contenedor = document.getElementById('contenedor-mis-citas');
+
+    if (!contenedor) return;
+
+    const paciente = JSON.parse(sessionStorage.getItem('paciente'));
+
+    if (!paciente) {
+        window.location.href = '/index.html';
+        return;
+    }
+
+    cargarMisCitas();
+
+    async function cargarMisCitas() {
+
+        contenedor.innerHTML = `
+            <div class="sin-citas">
+                Cargando citas médicas...
+            </div>
+        `;
+
+        try {
+
+            const response = await fetch(`${API}/api/citas/paciente/${paciente.idPaciente}`);
+
+            if (!response.ok) {
+                throw new Error();
+            }
+
+            const citas = await response.json();
+
+            if (citas.length === 0) {
+
+                contenedor.innerHTML = `
+                    <div class="sin-citas">
+                        No tienes citas registradas actualmente.
+                    </div>
+                `;
+
+                return;
+            }
+
+            contenedor.innerHTML = '';
+
+            citas.forEach(cita => {
+
+                contenedor.innerHTML += `
+
+                    <div class="tarjeta-cita">
+
+                        <div class="encabezado-cita">
+
+                            <h2 class="nombre-doctor">
+                                Dr. ${cita.doctor.nombres} ${cita.doctor.apellidos}
+                            </h2>
+
+                            <div class="estado-cita">
+                                ${cita.estado}
+                            </div>
+
+                        </div>
+
+                        <div class="detalle-cita">
+                            <span>Especialidad:</span>
+                            ${cita.doctor.especialidad.nombre}
+                        </div>
+
+                        <div class="detalle-cita">
+                            <span>Fecha:</span>
+                            ${cita.fechaCita}
+                        </div>
+
+                        <div class="detalle-cita">
+                            <span>Horario:</span>
+                            ${cita.horaCita}
+                        </div>
+
+                        <div class="detalle-cita">
+                            <span>Motivo:</span>
+                            ${cita.motivo ?? 'No especificado'}
+                        </div>
+
+                        <button class="boton-cancelar"
+                            onclick="cancelarCita(${cita.idCita})">
+
+                            Cancelar cita
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            });
+
+        } catch (err) {
+
+            contenedor.innerHTML = `
+                <div class="sin-citas" style="color:red;">
+                    Error al cargar las citas.
+                </div>
+            `;
+
+        }
+
+    }
+
+    window.cancelarCita = async function (idCita) {
+
+        const result = await Swal.fire({
+            icon: 'warning',
+            title: '¿Cancelar cita?',
+            text: 'La cita será cancelada del sistema.',
+            showCancelButton: true,
+            confirmButtonColor: '#004a99',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+
+            const response = await fetch(`${API}/api/citas/${idCita}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cita cancelada',
+                    confirmButtonColor: '#004a99'
+                });
+
+                cargarMisCitas();
+
+            } else {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No se pudo cancelar',
+                    confirmButtonColor: '#004a99'
+                });
+
+            }
+
+        } catch {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                confirmButtonColor: '#004a99'
+            });
+
+        }
+
+    };
+
+}
