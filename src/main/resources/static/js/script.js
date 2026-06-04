@@ -1449,7 +1449,7 @@ function iniciarModuloMisCitas() {
                                 Dr. ${cita.doctor.nombres} ${cita.doctor.apellidos}
                             </h2>
 
-                            <div class="estado-cita">
+                            <div class="estado-cita ${cita.estado.toLowerCase()}">
                                 ${cita.estado}
                             </div>
 
@@ -1475,12 +1475,12 @@ function iniciarModuloMisCitas() {
                             ${cita.motivo ?? 'No especificado'}
                         </div>
 
-                        <button class="boton-cancelar"
-                            onclick="cancelarCita(${cita.idCita})">
-
-                            Cancelar cita
-
-                        </button>
+${cita.estado !== 'CANCELADA' ? `
+    <button class="boton-cancelar"
+        onclick="cancelarCita(${cita.idCita})">
+        Cancelar cita
+    </button>
+` : '<p style="color:#dc2626; font-weight:700; text-align:center; margin-top:10px;">Cita cancelada</p>'}
 
                     </div>
 
