@@ -1517,7 +1517,8 @@ ${cita.estado !== 'CANCELADA' ? `
             showCancelButton: true,
             confirmButtonColor: '#004a99',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, cancelar'
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No'
         });
 
         if (!result.isConfirmed) return;
