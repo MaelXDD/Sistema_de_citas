@@ -1591,31 +1591,31 @@ ${cita.estado !== 'CANCELADA' ? `
         }
 
     };
-// Modificación para mostrar el modal de confirmación al querer salir de la pantalla de pago
-    window.volverDesdePago = function() {
-        Swal.fire({
-            title: '¿Seguro que desea salir?',
-            text: 'La cita no se procesará y se liberará el horario para otros pacientes.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626', // Color rojo para indicar salida/cancelación
-            cancelButtonColor: '#666',
-            confirmButtonText: 'Sí, salir',
-            cancelButtonText: 'No, completar pago'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
-                if (cita && cita.idCita) {
-                    try {
-                        await fetch(`${API}/api/citas/${cita.idCita}`, { method: 'DELETE' });
-                    } catch (e) {
-                        console.error("Error al cancelar la reserva de la cita:", e);
-                    }
-                    sessionStorage.removeItem('citaPendiente');
-                }
-                if (window.intervaloPago) clearInterval(window.intervaloPago);
-                window.location.href = '/citas.html';
-            }
-        });
-    };
 }
+
+window.volverDesdePago = function() {
+    Swal.fire({
+        title: '¿Seguro que desea salir?',
+        text: 'La cita no se procesará y se liberará el horario para otros pacientes.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#666',
+        confirmButtonText: 'Sí, salir',
+        cancelButtonText: 'No, completar pago'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
+            if (cita && cita.idCita) {
+                try {
+                    await fetch(`${API}/api/citas/${cita.idCita}`, { method: 'DELETE' });
+                } catch (e) {
+                    console.error("Error al cancelar la reserva de la cita:", e);
+                }
+                sessionStorage.removeItem('citaPendiente');
+            }
+            if (window.intervaloPago) clearInterval(window.intervaloPago);
+            window.location.href = '/citas.html';
+        }
+    });
+};
