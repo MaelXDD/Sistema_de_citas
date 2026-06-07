@@ -1298,8 +1298,7 @@ async function iniciarModuloPago() {
     document.getElementById('pago-fecha').textContent        = cita.fecha        ?? '—';
     document.getElementById('pago-hora').textContent         = cita.horario      ?? '—';
 
-    // ===== NUEVO: CONSULTA A LA BASE DE DATOS =====
-    let montoTotal = 30.00; // Precio base por defecto en caso de que la especialidad no tenga precio registrado
+    let montoTotal = 30.00;
     try {
         const res = await fetch(`${API}/api/precios/especialidad/${cita.idEspecialidad}`);
         if (res.ok) {
@@ -1310,22 +1309,12 @@ async function iniciarModuloPago() {
         console.error("Error obteniendo precio de la BD", e);
     }
 
-    // Guardamos el monto dinámico en la sesión para que "procesarPago" lo use
     cita.monto = montoTotal;
     sessionStorage.setItem('citaPendiente', JSON.stringify(cita));
-
     document.querySelector('.fila-resumen.total strong:last-child').textContent = `S/ ${montoTotal.toFixed(2)}`;
 
-    // ===== Protección nativa del navegador al recargar o cerrar pestaña =====
-    window.addEventListener('beforeunload', (event) => {
-        if (sessionStorage.getItem('citaPendiente')) {
-            event.preventDefault();
-            event.returnValue = '';
-        }
-    });
-
-    // ===== Temporizador de 1 minuto =====
-    let tiempo = 60; // 60 segundos
+    // Temporizador
+    let tiempo = 60;
     const spanTiempo = document.getElementById('tiempo-restante');
 
     window.intervaloPago = setInterval(() => {
@@ -1339,12 +1328,15 @@ async function iniciarModuloPago() {
 
         if (tiempo <= 0) {
             clearInterval(window.intervaloPago);
+
+            // Borrar activamente la cita desde el frontend al acabarse el tiempo
+            fetch(`${API}/api/citas/${cita.idCita}`, { method: 'DELETE' }).catch(console.error);
             sessionStorage.removeItem('citaPendiente');
 
             Swal.fire({
                 icon: 'error',
                 title: 'Tiempo agotado',
-                text: 'El tiempo para realizar el pago ha expirado. La reserva ha sido liberada para otros pacientes.',
+                text: 'El tiempo para realizar el pago ha expirado. La reserva ha sido cancelada y el horario liberado.',
                 confirmButtonColor: '#004a99'
             }).then(() => {
                 window.location.href = '/citas.html';
@@ -1611,32 +1603,19 @@ ${cita.estado !== 'CANCELADA' ? `
             confirmButtonText: 'Sí, salir',
             cancelButtonText: 'No, completar pago'
         }).then(async (result) => {
-            // Si el usuario confirma que quiere salir
             if (result.isConfirmed) {
                 const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
                 if (cita && cita.idCita) {
                     try {
-                        // Eliminamos la cita pendiente de la base de datos inmediatamente
                         await fetch(`${API}/api/citas/${cita.idCita}`, { method: 'DELETE' });
                     } catch (e) {
                         console.error("Error al cancelar la reserva de la cita:", e);
                     }
                     sessionStorage.removeItem('citaPendiente');
                 }
-                // Si había un temporizador activo, lo limpiamos
                 if (window.intervaloPago) clearInterval(window.intervaloPago);
-
-                // Redirigimos al flujo de selección de citas
                 window.location.href = '/citas.html';
             }
         });
     };
-    // Evitar que el usuario recargue o cierre la pestaña por accidente sin advertirle
-    window.addEventListener('beforeunload', (event) => {
-        // Solo activamos la alerta si todavía existe una cita pendiente en el sessionStorage
-        if (sessionStorage.getItem('citaPendiente')) {
-            event.preventDefault();
-            event.returnValue = ''; // Esto activa el cuadro de diálogo nativo del navegador
-        }
-    });
 }

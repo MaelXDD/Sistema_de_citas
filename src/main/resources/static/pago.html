@@ -13,9 +13,6 @@
         <img src="/imagenes/logomuni.png" alt="Logo Hospital">
         <h1>Hospital de la Solidaridad</h1>
     </div>
-    <nav class="menu-principal">
-        <a href="/">Inicio</a>
-    </nav>
     <div class="botones-acceso" id="zona-sesion"></div>
 </header>
 
@@ -30,17 +27,6 @@
             </p>
         </div>
 
-        <div style="margin-top: 30px;">
-            <button class="boton-accion-total" onclick="procesarPago()" style="width:100%;">
-                Confirmar y Pagar
-            </button>
-            <button class="boton-volver" onclick="volverDesdePago()"
-                    style="width:100%; margin-top:12px; text-align:center;">
-                ← Volver y cancelar reserva
-            </button>
-        </div>
-
-        <!-- Resumen -->
         <div class="resumen-pago">
             <div class="fila-resumen"><span>Especialidad</span><strong id="pago-especialidad">—</strong></div>
             <div class="fila-resumen"><span>Doctor</span><strong id="pago-doctor">—</strong></div>
@@ -49,7 +35,6 @@
             <div class="fila-resumen total"><span>Total a pagar</span><strong>S/ 30.00</strong></div>
         </div>
 
-        <!-- MÉTODO DE PAGO -->
         <div class="metodos-pago">
             <p class="etiqueta-selector">Selecciona tu método de pago</p>
             <div class="grilla-metodos">
@@ -74,27 +59,14 @@
             <button class="boton-accion-total" onclick="procesarPago()" style="width:100%;">
                 Confirmar y Pagar
             </button>
-            <button class="boton-volver" onclick="window.location.href='/citas.html'"
+            <button class="boton-volver" onclick="volverDesdePago()"
                     style="width:100%; margin-top:12px; text-align:center;">
-                ← Volver
+                ← Volver y cancelar reserva
             </button>
         </div>
 
     </div>
 </div>
-
-<footer class="pie-inferior">
-    <div class="contenedor-pie">
-        <div class="columna-footer">
-            <h4>Hospital de la Solidaridad Vitarte</h4>
-            <p>Donde tu salud y tu vida es lo más importante para nosotros.</p>
-        </div>
-        <div class="columna-footer">
-            <h4>Ayuda</h4>
-            <p>Horario de atención: Lunes a Sábado de 7:00 am a 7:00 pm.</p>
-        </div>
-    </div>
-</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/script.js"></script>
