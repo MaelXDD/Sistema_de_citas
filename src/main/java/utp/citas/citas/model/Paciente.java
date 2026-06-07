@@ -43,4 +43,7 @@ public class Paciente {
 
     @Column(name = "activo")
     private Boolean activo = true;
+
+    @Column(name = "rol", nullable = false, length = 20)
+    private String rol = "PACIENTE";
 }

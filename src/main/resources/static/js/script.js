@@ -60,34 +60,35 @@ function cerrarSesion() {
 function renderizarHeaderSesion() {
     const zona = document.getElementById('zona-sesion');
     const nav  = document.getElementById('menu-nav');
-
     const paciente = JSON.parse(sessionStorage.getItem('paciente'));
 
-    if (paciente) {
-        if (zona) {
-            zona.innerHTML = `
-                <span style="color:#fff; font-weight:600;">Hola, ${paciente.nombres}</span>
-                <button class="boton-blanco" onclick="cerrarSesion()">Cerrar sesión</button>`;
-        }
-        if (nav) {
-            nav.innerHTML = `
-                <a href="/index.html">Inicio</a>
-                <a href="/citas.html">Sacar Cita</a>
-                <a href="/miscitas.html">Mis Citas</a>`;
-        }
+    if (paciente && paciente.rol === 'ADMIN') {
+        if (zona) zona.innerHTML = `
+            <span style="color:#fff; font-weight:600;">Hola, ${paciente.nombres}</span>
+            <button class="boton-blanco" onclick="cerrarSesion()">Cerrar sesión</button>`;
+        if (nav) nav.innerHTML = `
+            <a href="/index.html">Inicio</a>
+            <a href="/especialidades.html">Especialidades</a>
+            <a href="/doctores.html">Doctores</a>
+            <a href="/horarios.html">Horarios</a>`;
+
+    } else if (paciente) {
+        if (zona) zona.innerHTML = `
+            <span style="color:#fff; font-weight:600;">Hola, ${paciente.nombres}</span>
+            <button class="boton-blanco" onclick="cerrarSesion()">Cerrar sesión</button>`;
+        if (nav) nav.innerHTML = `
+            <a href="/index.html">Inicio</a>
+            <a href="/citas.html">Sacar Cita</a>
+            <a href="/miscitas.html">Mis Citas</a>`;
+
     } else {
-        if (zona) {
-            zona.innerHTML = `
-                <button class="boton-blanco" onclick="toggleModal('modal-login')">Iniciar Sesión</button>
-                <button class="boton-azul"   onclick="toggleModal('modal-registro')">Registrarse</button>`;
-        }
-        if (nav) {
-            nav.innerHTML = `
-                <a href="/index.html">Inicio</a>
-                <a href="/especialidades.html">Especialidades</a>
-                <a href="/doctores.html">Doctores</a>
-                <a href="/horarios.html">Horarios</a>`;
-        }
+        if (zona) zona.innerHTML = `
+            <button class="boton-blanco" onclick="toggleModal('modal-login')">Iniciar Sesión</button>
+            <button class="boton-azul" onclick="toggleModal('modal-registro')">Registrarse</button>`;
+        if (nav) nav.innerHTML = `
+            <a href="/index.html">Inicio</a>
+            <a href="#" onclick="irConSesion('/citas.html')">Sacar Cita</a>
+            <a href="#" onclick="irConSesion('/miscitas.html')">Mis Citas</a>`;
     }
 }
 
@@ -99,7 +100,14 @@ function irSacarCita() {
         toggleModal('modal-login');
     }
 }
-
+function irConSesion(url) {
+    const paciente = JSON.parse(sessionStorage.getItem('paciente'));
+    if (!paciente) {
+        toggleModal('modal-login');
+    } else {
+        window.location.href = url;
+    }
+}
 //  Modal de Registro
 
 function configurarFormularioRegistro(form) {
