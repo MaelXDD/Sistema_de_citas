@@ -11,6 +11,8 @@ import utp.citas.citas.repository.PagoRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/citas")
@@ -28,7 +30,20 @@ public class CitaController {
     @PostMapping
     public ResponseEntity<Cita> crear(@Valid @RequestBody Cita cita) {
         cita.setEstado("PENDIENTE");
-        return ResponseEntity.status(HttpStatus.CREATED).body(citaRepository.save(cita));
+        Cita nuevaCita = citaRepository.save(cita);
+
+        // NÚCLEO DEL SISTEMA "Estilo Cineplanet": Temporizador de 1 minuto
+        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+            citaRepository.findById(nuevaCita.getIdCita()).ifPresent(c -> {
+                // Si la cita sigue PENDIENTE después de 1 minuto, la cancelamos
+                if ("PENDIENTE".equals(c.getEstado())) {
+                    c.setEstado("CANCELADA");
+                    citaRepository.save(c);
+                }
+            });
+        }, 1, TimeUnit.MINUTES);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCita);
     }
 
     @GetMapping("/paciente/{idPaciente}")

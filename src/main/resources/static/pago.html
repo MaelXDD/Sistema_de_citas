@@ -25,6 +25,19 @@
         <div class="cabecera-formulario">
             <h2>Confirmar Pago</h2>
             <p>Revisa el resumen de tu cita y elige el método de pago.</p>
+            <p id="temporizador-pago" style="color: #dc2626; font-weight: bold; margin-top: 10px; background: #fee2e2; padding: 8px; border-radius: 8px;">
+                La reserva expira en: <span id="tiempo-restante">01:00</span>
+            </p>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button class="boton-accion-total" onclick="procesarPago()" style="width:100%;">
+                Confirmar y Pagar
+            </button>
+            <button class="boton-volver" onclick="volverDesdePago()"
+                    style="width:100%; margin-top:12px; text-align:center;">
+                ← Volver y cancelar reserva
+            </button>
         </div>
 
         <!-- Resumen -->

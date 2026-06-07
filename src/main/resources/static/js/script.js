@@ -1252,13 +1252,14 @@ function iniciarModuloCitas() {
                 toggleModal('modal-confirmar-cita');
 
                 sessionStorage.setItem('citaPendiente', JSON.stringify({
-                    idCita:       citaCreada.idCita,
-                    especialidad: nombreEspSel,
-                    doctor:       nombreDocSel,
-                    dia:          diaSel,
-                    horario:      horaSel,
-                    fecha:        fecha,
-                    motivo:       motivo || '—'
+                    idCita:         citaCreada.idCita,
+                    idEspecialidad: idEspecialidadSel,
+                    especialidad:   nombreEspSel,
+                    doctor:         nombreDocSel,
+                    dia:            diaSel,
+                    horario:        horaSel,
+                    fecha:          fecha,
+                    motivo:         motivo || '—'
                 }));
 
                 window.location.href = '/pago.html';
@@ -1274,7 +1275,7 @@ function iniciarModuloCitas() {
 
     cargarEspecialidadesCitas();
 }
-function iniciarModuloPago() {
+async function iniciarModuloPago() {
     const contenedor = document.getElementById('pago-especialidad');
     if (!contenedor) return;
 
@@ -1297,17 +1298,59 @@ function iniciarModuloPago() {
     document.getElementById('pago-fecha').textContent        = cita.fecha        ?? '—';
     document.getElementById('pago-hora').textContent         = cita.horario      ?? '—';
 
-    // Precio según especialidad
-    const precios = {
-        'Cardiología':   120.00,
-        'Pediatría':      80.00,
-        'Traumatología':  90.00,
-        'Dermatología':   85.00,
-        'Neurología':    110.00
-    };
+    // ===== NUEVO: CONSULTA A LA BASE DE DATOS =====
+    let montoTotal = 30.00; // Precio base por defecto en caso de que la especialidad no tenga precio registrado
+    try {
+        const res = await fetch(`${API}/api/precios/especialidad/${cita.idEspecialidad}`);
+        if (res.ok) {
+            const precioBD = await res.json();
+            montoTotal = precioBD.monto;
+        }
+    } catch (e) {
+        console.error("Error obteniendo precio de la BD", e);
+    }
 
-    const precio = precios[cita.especialidad] ?? 30.00;
-    document.querySelector('.fila-resumen.total strong:last-child').textContent = `S/ ${precio.toFixed(2)}`;
+    // Guardamos el monto dinámico en la sesión para que "procesarPago" lo use
+    cita.monto = montoTotal;
+    sessionStorage.setItem('citaPendiente', JSON.stringify(cita));
+
+    document.querySelector('.fila-resumen.total strong:last-child').textContent = `S/ ${montoTotal.toFixed(2)}`;
+
+    // ===== Protección nativa del navegador al recargar o cerrar pestaña =====
+    window.addEventListener('beforeunload', (event) => {
+        if (sessionStorage.getItem('citaPendiente')) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
+    });
+
+    // ===== Temporizador de 1 minuto =====
+    let tiempo = 60; // 60 segundos
+    const spanTiempo = document.getElementById('tiempo-restante');
+
+    window.intervaloPago = setInterval(() => {
+        tiempo--;
+        let min = Math.floor(tiempo / 60);
+        let sec = tiempo % 60;
+
+        if(spanTiempo) {
+            spanTiempo.textContent = `0${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        if (tiempo <= 0) {
+            clearInterval(window.intervaloPago);
+            sessionStorage.removeItem('citaPendiente');
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Tiempo agotado',
+                text: 'El tiempo para realizar el pago ha expirado. La reserva ha sido liberada para otros pacientes.',
+                confirmButtonColor: '#004a99'
+            }).then(() => {
+                window.location.href = '/citas.html';
+            });
+        }
+    }, 1000);
 }
 
 window.seleccionarMetodo = function(el, metodo) {
@@ -1335,15 +1378,8 @@ window.procesarPago = async function() {
         return;
     }
 
-    const precios = {
-        'Cardiología':   120.00,
-        'Pediatría':      80.00,
-        'Traumatología':  90.00,
-        'Dermatología':   85.00,
-        'Neurología':    110.00
-    };
-
-    const monto = precios[cita.especialidad] ?? 30.00;
+    // Usamos el monto que extrajimos de la BD en iniciarModuloPago()
+    const monto = cita.monto || 30.00;
 
     const payload = {
         cita:       { idCita: cita.idCita },
@@ -1360,7 +1396,10 @@ window.procesarPago = async function() {
         });
 
         if (res.ok) {
+            // Limpiamos todo si el pago fue exitoso
+            if (window.intervaloPago) clearInterval(window.intervaloPago);
             sessionStorage.removeItem('citaPendiente');
+
             Swal.fire({
                 icon:             'success',
                 title:            '¡Pago Confirmado!',
@@ -1560,5 +1599,44 @@ ${cita.estado !== 'CANCELADA' ? `
         }
 
     };
+// Modificación para mostrar el modal de confirmación al querer salir de la pantalla de pago
+    window.volverDesdePago = function() {
+        Swal.fire({
+            title: '¿Seguro que desea salir?',
+            text: 'La cita no se procesará y se liberará el horario para otros pacientes.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626', // Color rojo para indicar salida/cancelación
+            cancelButtonColor: '#666',
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'No, completar pago'
+        }).then(async (result) => {
+            // Si el usuario confirma que quiere salir
+            if (result.isConfirmed) {
+                const cita = JSON.parse(sessionStorage.getItem('citaPendiente'));
+                if (cita && cita.idCita) {
+                    try {
+                        // Eliminamos la cita pendiente de la base de datos inmediatamente
+                        await fetch(`${API}/api/citas/${cita.idCita}`, { method: 'DELETE' });
+                    } catch (e) {
+                        console.error("Error al cancelar la reserva de la cita:", e);
+                    }
+                    sessionStorage.removeItem('citaPendiente');
+                }
+                // Si había un temporizador activo, lo limpiamos
+                if (window.intervaloPago) clearInterval(window.intervaloPago);
 
+                // Redirigimos al flujo de selección de citas
+                window.location.href = '/citas.html';
+            }
+        });
+    };
+    // Evitar que el usuario recargue o cierre la pestaña por accidente sin advertirle
+    window.addEventListener('beforeunload', (event) => {
+        // Solo activamos la alerta si todavía existe una cita pendiente en el sessionStorage
+        if (sessionStorage.getItem('citaPendiente')) {
+            event.preventDefault();
+            event.returnValue = ''; // Esto activa el cuadro de diálogo nativo del navegador
+        }
+    });
 }
