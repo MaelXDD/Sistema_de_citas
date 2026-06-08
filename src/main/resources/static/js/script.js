@@ -491,6 +491,7 @@ function iniciarModuloEspecialidades() {
     const btnRegresar     = document.getElementById('btnRegresarHome');
     const form            = document.getElementById('especialidadForm');
 
+    // ── Vistas ────────────────────────────────────────────────
     function mostrarFormularioEsp(esEdicion = false) {
         document.getElementById('tituloFormulario').textContent      = esEdicion ? 'Editar Especialidad'                                  : 'Registrar Especialidad';
         document.getElementById('descripcionFormulario').textContent = esEdicion ? 'Modifique los datos de la especialidad seleccionada.' : 'Ingrese los datos requeridos para registrar la especialidad.';
@@ -504,6 +505,7 @@ function iniciarModuloEspecialidades() {
         vistaTabla.classList.remove('oculto');
         form.reset();
         document.getElementById('inputIdEspecialidad').value = '';
+        document.getElementById('inputIdPrecio').value       = '';
     }
 
     btnMostrarForm.addEventListener('click', () => mostrarFormularioEsp(false));
@@ -516,62 +518,72 @@ function iniciarModuloEspecialidades() {
         }
     });
 
+    // ── Cargar tabla con precios ──────────────────────────────
     async function cargarTablaEspecialidades() {
         try {
-            const res = await fetch(API_ESP);
-            if (!res.ok) throw new Error();
-            const lista = await res.json();
+            const [resEsp, resPrecios] = await Promise.all([
+                fetch(API_ESP),
+                fetch(`${API}/api/precios`)
+            ]);
+
+            if (!resEsp.ok) throw new Error();
+            const lista   = await resEsp.json();
+            const precios = resPrecios.ok ? await resPrecios.json() : [];
 
             if (lista.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="celda-estado">No hay especialidades registradas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="celda-estado">No hay especialidades registradas.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = lista.map(esp => `
-                <tr>
-                    <td style="font-weight:bold; color:var(--azul-institucional);">${esp.idEspecialidad}</td>
-                    <td>${esp.nombre}</td>
-                    <td>${esp.descripcion ?? '<span style="color:#aaa;">—</span>'}</td>
-                    <td>
-                        <span style="
-                            display:inline-block; padding:3px 12px; border-radius:20px;
-                            font-size:0.82rem; font-weight:700;
-                            background:${esp.activo ? '#d1fae5' : '#fee2e2'};
-                            color:${esp.activo ? '#065f46' : '#991b1b'};
-                        ">${esp.activo ? 'Activo' : 'Inactivo'}</span>
-                    </td>
-                    <td>
-                        <button class="boton-editar"
-                            onclick="prepararEdicionEsp(${esp.idEspecialidad}, '${esp.nombre.replace(/'/g, "\\'")}', \`${(esp.descripcion ?? '').replace(/`/g, '\\`')}\`)">
-                            Editar
-                        </button>
-                        <button class="boton-eliminar"
-                            onclick="toggleEstadoEsp(${esp.idEspecialidad}, ${esp.activo})">
-                            ${esp.activo ? 'Desactivar' : 'Activar'}
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = lista.map(esp => {
+                const precioObj = precios.find(p => p.especialidad.idEspecialidad === esp.idEspecialidad);
+                const monto     = precioObj ? `S/ ${parseFloat(precioObj.monto).toFixed(2)}` : '—';
+
+                return `
+                    <tr>
+                        <td style="font-weight:bold; color:var(--azul-institucional);">${esp.idEspecialidad}</td>
+                        <td>${esp.nombre}</td>
+                        <td>${esp.descripcion ?? '<span style="color:#aaa;">—</span>'}</td>
+                        <td><strong>${monto}</strong></td>
+                        <td>
+                            <span style="
+                                display:inline-block; padding:3px 12px; border-radius:20px;
+                                font-size:0.82rem; font-weight:700;
+                                background:${esp.activo ? '#d1fae5' : '#fee2e2'};
+                                color:${esp.activo ? '#065f46' : '#991b1b'};
+                            ">${esp.activo ? 'Activo' : 'Inactivo'}</span>
+                        </td>
+                        <td>
+                            <button class="boton-editar"
+                                onclick="prepararEdicionEsp(${esp.idEspecialidad}, '${esp.nombre.replace(/'/g, "\\'")}', \`${(esp.descripcion ?? '').replace(/`/g, '\\`')}\`)">
+                                Editar
+                            </button>
+                            <button class="boton-eliminar"
+                                onclick="toggleEstadoEsp(${esp.idEspecialidad}, ${esp.activo})">
+                                ${esp.activo ? 'Desactivar' : 'Activar'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
         } catch {
-            tbody.innerHTML = '<tr><td colspan="5" class="celda-estado" style="color:red;">Error al cargar las especialidades.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="celda-estado" style="color:red;">Error al cargar las especialidades.</td></tr>';
         }
     }
 
+    // ── Submit: POST / PUT especialidad + precio ──────────────
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const id          = document.getElementById('inputIdEspecialidad').value;
+        const idPrecio    = document.getElementById('inputIdPrecio').value;
         const nombre      = document.getElementById('inputNombre').value.trim();
         const descripcion = document.getElementById('inputDescripcion').value.trim();
+        const precio      = document.getElementById('inputPrecio').value.trim();
 
         if (!nombre) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Campo requerido',
-                text: 'El nombre de la especialidad es obligatorio.',
-                confirmButtonColor: '#004a99'
-            });
+            Swal.fire({ icon: 'warning', title: 'Campo requerido', text: 'El nombre de la especialidad es obligatorio.', confirmButtonColor: '#004a99' });
             return;
         }
 
@@ -585,49 +597,86 @@ function iniciarModuloEspecialidades() {
                 body:    JSON.stringify(payload)
             });
 
-            if (res.ok) {
-                mostrarTablaEsp();
-                await cargarTablaEspecialidades();
-                Swal.fire({
-                    icon: 'success',
-                    title: esEdicion ? '¡Especialidad actualizada!' : '¡Especialidad registrada!',
-                    text:  esEdicion ? 'Los datos se actualizaron en la base de datos.' : 'La especialidad fue guardada correctamente en la base de datos.',
-                    confirmButtonColor: '#004a99'
-                });
-            } else {
+            if (!res.ok) {
                 const err = await res.json().catch(() => ({}));
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: err.mensaje || 'No se pudo guardar la especialidad.',
-                    confirmButtonColor: '#004a99'
-                });
+                Swal.fire({ icon: 'error', title: 'Error', text: err.mensaje || 'No se pudo guardar la especialidad.', confirmButtonColor: '#004a99' });
+                return;
             }
-        } catch {
+
+            const especialidadGuardada = await res.json();
+
+            // Guardar o actualizar precio si se ingresó
+            if (precio && parseFloat(precio) > 0) {
+                const precioPayload = {
+                    especialidad: { idEspecialidad: especialidadGuardada.idEspecialidad },
+                    descripcion:  `Consulta ${nombre}`,
+                    monto:        parseFloat(precio),
+                    activo:       true
+                };
+
+                if (idPrecio) {
+                    // Actualizar precio existente
+                    await fetch(`${API}/api/precios/${idPrecio}`, {
+                        method:  'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body:    JSON.stringify(precioPayload)
+                    });
+                } else {
+                    // Crear nuevo precio
+                    await fetch(`${API}/api/precios`, {
+                        method:  'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body:    JSON.stringify(precioPayload)
+                    });
+                }
+            }
+
+            mostrarTablaEsp();
+            await cargarTablaEspecialidades();
             Swal.fire({
-                icon: 'error',
-                title: 'Error de conexión',
-                text: 'No se pudo conectar con el servidor Spring Boot.',
+                icon: 'success',
+                title: esEdicion ? '¡Especialidad actualizada!' : '¡Especialidad registrada!',
+                text:  esEdicion ? 'Los datos se actualizaron en la base de datos.' : 'La especialidad fue guardada correctamente en la base de datos.',
                 confirmButtonColor: '#004a99'
             });
+
+        } catch {
+            Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor Spring Boot.', confirmButtonColor: '#004a99' });
         }
     });
 
-    window.prepararEdicionEsp = function(id, nombre, descripcion) {
+    // ── Editar: carga datos + precio actual ───────────────────
+    window.prepararEdicionEsp = async function(id, nombre, descripcion) {
         document.getElementById('inputIdEspecialidad').value = id;
         document.getElementById('inputNombre').value         = nombre;
         document.getElementById('inputDescripcion').value    = descripcion;
+
+        // Cargar precio actual
+        try {
+            const res = await fetch(`${API}/api/precios/especialidad/${id}`);
+            if (res.ok) {
+                const precio = await res.json();
+                document.getElementById('inputPrecio').value   = parseFloat(precio.monto).toFixed(2);
+                document.getElementById('inputIdPrecio').value = precio.idPrecio;
+            } else {
+                document.getElementById('inputPrecio').value   = '';
+                document.getElementById('inputIdPrecio').value = '';
+            }
+        } catch {
+            document.getElementById('inputPrecio').value   = '';
+            document.getElementById('inputIdPrecio').value = '';
+        }
+
         mostrarFormularioEsp(true);
     };
 
+    // ── Desactivar / Activar ──────────────────────────────────
     window.toggleEstadoEsp = async function(id, estaActivo) {
         const accion = estaActivo ? 'desactivar' : 'activar';
         const result = await Swal.fire({
             icon: 'warning',
             title: `¿Deseas ${accion} esta especialidad?`,
-            text:  estaActivo
-                ? 'Dejará de estar disponible para nuevas citas.'
-                : 'Volverá a estar disponible en el sistema.',
+            text:  estaActivo ? 'Dejará de estar disponible para nuevas citas.' : 'Volverá a estar disponible en el sistema.',
             showCancelButton:   true,
             confirmButtonText:  `Sí, ${accion}`,
             cancelButtonText:   'Cancelar',
@@ -637,36 +686,18 @@ function iniciarModuloEspecialidades() {
         if (!result.isConfirmed) return;
 
         try {
-            let res;
-            if (estaActivo) {
-                res = await fetch(`${API}/api/especialidades/${id}`, { method: 'DELETE' });
-            } else {
-                res = await fetch(`${API}/api/especialidades/${id}/activar`, { method: 'PUT' });
-            }
+            const res = estaActivo
+                ? await fetch(`${API}/api/especialidades/${id}`, { method: 'DELETE' })
+                : await fetch(`${API}/api/especialidades/${id}/activar`, { method: 'PUT' });
 
             if (res.ok || res.status === 204) {
                 await cargarTablaEspecialidades();
-                Swal.fire({
-                    icon: 'success',
-                    title: `Especialidad ${estaActivo ? 'desactivada' : 'activada'}`,
-                    text:  'El cambio fue guardado en la base de datos.',
-                    confirmButtonColor: '#004a99'
-                });
+                Swal.fire({ icon: 'success', title: `Especialidad ${estaActivo ? 'desactivada' : 'activada'}`, text: 'El cambio fue guardado en la base de datos.', confirmButtonColor: '#004a99' });
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: `No se pudo ${accion} la especialidad.`,
-                    confirmButtonColor: '#004a99'
-                });
+                Swal.fire({ icon: 'error', title: 'Error', text: `No se pudo ${accion} la especialidad.`, confirmButtonColor: '#004a99' });
             }
         } catch {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error de conexión',
-                text: 'Sin respuesta del servidor.',
-                confirmButtonColor: '#004a99'
-            });
+            Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'Sin respuesta del servidor.', confirmButtonColor: '#004a99' });
         }
     };
 

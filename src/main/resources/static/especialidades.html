@@ -17,7 +17,6 @@
         <a href="/index.html">Inicio</a>
         <a href="/especialidades.html" class="enlace-activo">Especialidades</a>
         <a href="/doctores.html">Doctores</a>
-        <a href="/horarios.html">Horarios</a>
     </nav>
     <div class="botones-acceso">
         <button class="boton-blanco" id="btnRegresarHome">Regresar</button>
@@ -26,7 +25,6 @@
 
 <main class="area-gestion-medica">
 
-    <!-- Vista Tabla -->
     <div id="vistaTabla" class="tarjeta-panel">
         <div class="cabecera-panel">
             <div class="titulos-seccion">
@@ -45,20 +43,20 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Descripción</th>
+                    <th>Precio</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody id="tablaEspecialidadesBody">
                 <tr>
-                    <td colspan="5" class="celda-estado">Cargando especialidades...</td>
+                    <td colspan="6" class="celda-estado">Cargando especialidades...</td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Vista Formulario -->
     <div id="vistaFormulario" class="tarjeta-panel panel-formulario oculto">
         <div class="cabecera-formulario">
             <h2 id="tituloFormulario">Registrar Especialidad</h2>
@@ -67,6 +65,7 @@
 
         <form id="especialidadForm" class="formulario-estandar">
             <input type="hidden" id="inputIdEspecialidad" name="idEspecialidad">
+            <input type="hidden" id="inputIdPrecio"       name="idPrecio">
 
             <input
                     type="text"
@@ -84,6 +83,15 @@
                     maxlength="500"
                     rows="4"
             ></textarea>
+
+            <input
+                    type="number"
+                    id="inputPrecio"
+                    name="precio"
+                    placeholder="Precio de consulta (S/)"
+                    min="0.01"
+                    step="0.01"
+            >
 
             <div class="fila-botones-formulario">
                 <button type="button" id="btnCancelar" class="boton-blanco">Cancelar</button>
