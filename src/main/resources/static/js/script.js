@@ -87,8 +87,9 @@ function renderizarHeaderSesion() {
             <button class="boton-azul" onclick="toggleModal('modal-registro')">Registrarse</button>`;
         if (nav) nav.innerHTML = `
             <a href="/index.html">Inicio</a>
-            <a href="#" onclick="irConSesion('/citas.html')">Sacar Cita</a>
-            <a href="#" onclick="irConSesion('/miscitas.html')">Mis Citas</a>`;
+            <a href="/sobre_nosotros.html">Sobre nosotros</a>
+            <a href="/vision.html">Visión</a>
+            <a href="/mision.html">Misión</a>`;
     }
 }
 
