@@ -137,6 +137,8 @@ body {
     flex-direction: column;
     align-items: center;
     width: 150px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 .circulo-blanco {
@@ -204,20 +206,63 @@ body {
 
 .contenedor-pie {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 60px;
+    align-items: start;
 }
 
+.columna-footer {
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+}
 .columna-footer h4 {
-    margin-bottom: 20px;
+    min-height: 50px;
+    margin-bottom: 25px;
     font-size: 1.2rem;
     border-bottom: 2px solid rgba(255,255,255,0.3);
     display: inline-block;
-    padding-bottom: 5px;
+    padding-bottom: 8px;
 }
 
-.columna-footer ul { list-style: none; }
-.columna-footer li { margin-bottom: 10px; }
+.columna-footer p { line-height: 1.7; }
+.columna-footer ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+.columna-footer li { margin-bottom: 16px; }
+
+.columna-footer a {
+    color: white;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.columna-footer a:hover {
+    color: #e8f9ff;
+    padding-left: 6px;
+}
+
+.footer-bottom {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.item-contacto {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+html {
+    scroll-behavior: smooth;
+}
 
 .capa-fondo-modal {
     display: none;
@@ -963,132 +1008,82 @@ body {
 ======================= */
 
 .modal {
-
     display: none;
     position: fixed;
     z-index: 999;
-
     left: 0;
     top: 0;
-
     width: 100%;
     height: 100%;
-
     background: rgba(0,0,0,0.6);
-
     justify-content: center;
     align-items: center;
-
 }
 
 .modal-contenido {
-
     width: 80%;
     max-width: 700px;
-
     background: white;
-
     border-radius: 20px;
-
     padding: 30px;
-
     position: relative;
-
     animation: aparecer 0.3s ease;
-
 }
 
 .cerrar-modal {
-
     position: absolute;
-
     right: 20px;
     top: 15px;
-
     font-size: 32px;
-
     cursor: pointer;
-
     color: #18c3e6;
-
     font-weight: bold;
-
 }
 
 .cerrar-modal:hover {
-
     color: #0ea7c7;
-
 }
 
 .modal-contenido h2 {
-
     text-align: center;
-
     color: #18c3e6;
-
     margin-bottom: 25px;
-
 }
 
 .seccion-info {
-
     margin-bottom: 20px;
-
 }
 
 .seccion-info h4 {
-
     color: #18c3e6;
-
     margin-bottom: 10px;
-
 }
 
 .seccion-info p {
-
     color: #444;
-
     line-height: 1.6;
-
 }
 
 .seccion-info ul {
-
     padding-left: 20px;
-
 }
 
 .seccion-info li {
-
     margin-bottom: 8px;
-
     color: #444;
-
 }
 
 @keyframes aparecer {
 
     from {
-
         transform: scale(0.8);
         opacity: 0;
-
     }
 
     to {
-
         transform: scale(1);
         opacity: 1;
-
     }
-}
-
-.tarjeta-icono {
-
-    cursor: pointer;
-    transition: 0.3s;
-
 }
 
 .tarjeta-icono:hover {
