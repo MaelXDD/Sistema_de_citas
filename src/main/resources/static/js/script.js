@@ -1650,3 +1650,105 @@ window.volverDesdePago = function() {
         }
     });
 };
+
+const especialidades = {
+
+    cardiología: {
+        titulo: "Cardiología",
+        descripcion: "Especialidad médica encargada del diagnóstico y tratamiento de enfermedades del corazón y del sistema cardiovascular.",
+        enfermedades: [
+            "Hipertensión arterial",
+            "Arritmias",
+            "Insuficiencia cardíaca",
+            "Infarto de miocardio"
+        ],
+        acudir: "Cuando presente dolor en el pecho, presión arterial elevada, palpitaciones frecuentes o antecedentes de enfermedades cardíacas."
+    },
+
+    pediatría: {
+        titulo: "Pediatría",
+        descripcion: "Especialidad dedicada a la atención médica integral de niños y adolescentes.",
+        enfermedades: [
+            "Infecciones respiratorias",
+            "Fiebre",
+            "Problemas de crecimiento",
+            "Alergias infantiles"
+        ],
+        acudir: "Cuando un niño presente síntomas persistentes, controles de crecimiento o vacunación."
+    },
+
+    traumatología: {
+        titulo: "Traumatología",
+        descripcion: "Especialidad enfocada en lesiones y enfermedades del sistema musculoesquelético.",
+        enfermedades: [
+            "Fracturas",
+            "Esguinces",
+            "Luxaciones",
+            "Dolor articular"
+        ],
+        acudir: "Después de caídas, golpes o cuando exista dolor persistente en huesos, músculos o articulaciones."
+    },
+
+    dermatología: {
+        titulo: "Dermatología",
+        descripcion: "Especialidad encargada del diagnóstico y tratamiento de enfermedades de la piel, cabello y uñas.",
+        enfermedades: [
+            "Acné",
+            "Dermatitis",
+            "Psoriasis",
+            "Hongos en la piel"
+        ],
+        acudir: "Cuando aparezcan manchas, irritaciones, alergias o cambios visibles en la piel."
+    },
+
+    neurología: {
+        titulo: "Neurología",
+        descripcion: "Especialidad médica enfocada en el estudio, diagnostico y tratamiento de enfermedades del sistema nervioso (cerebro y médula espinal).",
+        enfermedades: [
+            "Migraña",
+            "Epilepsia",
+            "Parkinson",
+            "Accidente cerebrovascular"
+        ],
+        acudir: "Ante dolores de cabeza frecuentes, mareos, convulsiones o problemas de memoria."
+    }
+
+};
+
+function mostrarEspecialidad(nombre) {
+
+    const esp = especialidades[nombre];
+
+    document.getElementById("tituloEspecialidad").innerText = esp.titulo;
+
+    document.getElementById("descripcionEspecialidad").innerText =
+        esp.descripcion;
+
+    document.getElementById("cuandoAcudir").innerText =
+        esp.acudir;
+
+    let lista =
+        document.getElementById("enfermedadesEspecialidad");
+
+    lista.innerHTML = "";
+
+    esp.enfermedades.forEach(enfermedad => {
+
+        let li = document.createElement("li");
+
+        li.textContent = enfermedad;
+
+        lista.appendChild(li);
+
+    });
+
+    document.getElementById("modalEspecialidad")
+        .style.display = "flex";
+}
+
+function cerrarModal() {
+
+    document.getElementById("modalEspecialidad")
+        .style.display = "none";
+
+}

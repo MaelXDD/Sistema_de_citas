@@ -38,35 +38,35 @@
     <h3>Nuestras Especialidades Destacadas</h3>
     <div class="rejilla-iconos">
 
-        <div class="tarjeta-icono">
+        <div class="tarjeta-icono" onclick="mostrarEspecialidad('cardiología')">
             <div class="circulo-blanco">
                 <img src="/imagenes/cardiologia.png" alt="Cardiología">
             </div>
             <p>Cardiología</p>
         </div>
 
-        <div class="tarjeta-icono">
+        <div class="tarjeta-icono"  onclick="mostrarEspecialidad('pediatría')">
             <div class="circulo-blanco">
                 <img src="/imagenes/pediatria.png" alt="Pediatría">
             </div>
             <p>Pediatría</p>
         </div>
 
-        <div class="tarjeta-icono">
+        <div class="tarjeta-icono" onclick="mostrarEspecialidad('traumatología')">
             <div class="circulo-blanco">
                 <img src="/imagenes/traumatologia.png" alt="Traumatología">
             </div>
             <p>Traumatología</p>
         </div>
 
-        <div class="tarjeta-icono">
+        <div class="tarjeta-icono" onclick="mostrarEspecialidad('dermatología')">
             <div class="circulo-blanco">
                 <img src="/imagenes/dermatologia.png" alt="Dermatología">
             </div>
             <p>Dermatología</p>
         </div>
 
-        <div class="tarjeta-icono">
+        <div class="tarjeta-icono" onclick="mostrarEspecialidad('neurología')">
             <div class="circulo-blanco">
                 <img src="/imagenes/neurologia.png" alt="Neurología">
             </div>
@@ -173,6 +173,35 @@
             <button type="submit" class="boton-accion-total">Crear cuenta</button>
         </form>
     </div>
+</div>
+
+<div id="modalEspecialidad" class="modal">
+
+    <div class="modal-contenido">
+
+        <span class="cerrar-modal" onclick="cerrarModal()">
+            &times;
+        </span>
+
+        <h2 id="tituloEspecialidad"></h2>
+
+        <div class="seccion-info">
+            <h4> Descripción</h4>
+            <p id="descripcionEspecialidad"></p>
+        </div>
+
+        <div class="seccion-info">
+            <h4> Enfermedades que trata</h4>
+            <ul id="enfermedadesEspecialidad"></ul>
+        </div>
+
+        <div class="seccion-info">
+            <h4> ¿Cuándo acudir?</h4>
+            <p id="cuandoAcudir"></p>
+        </div>
+
+    </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
