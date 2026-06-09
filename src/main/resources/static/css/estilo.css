@@ -21,8 +21,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Header */
-
 .encabezado-navegacion {
     background-color: var(--celeste-hospital);
     padding: 0.8rem 5%;
@@ -86,8 +84,6 @@ body {
 
 .boton-blanco:hover, .boton-azul:hover { transform: scale(1.05); }
 
-/* Bienvenida */
-
 .bloque-bienvenida {
     background-color: var(--blanco);
     padding: 80px 10%;
@@ -119,8 +115,6 @@ body {
     border-radius: 20px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
 }
-
-/* Especialidades en el index.html*/
 
 .contenedor-especialidades {
     background-color: var(--celeste-hospital);
@@ -166,8 +160,6 @@ body {
 
 .tarjeta-icono p { font-weight: 800; font-size: 1.1rem; }
 
-/* Pasos en index.html */
-
 .seccion-pasos { padding: 80px 10%; background-color: var(--blanco); }
 
 .seccion-pasos h3 { font-size: 2.2rem; margin-bottom: 50px; font-weight: 700; color: #444; }
@@ -204,8 +196,6 @@ body {
     margin-bottom: 5px;
 }
 
-/* Footer */
-
 .pie-inferior {
     background-color: var(--celeste-hospital);
     color: var(--blanco);
@@ -228,8 +218,6 @@ body {
 
 .columna-footer ul { list-style: none; }
 .columna-footer li { margin-bottom: 10px; }
-
-/* Modales */
 
 .capa-fondo-modal {
     display: none;
@@ -260,7 +248,6 @@ body {
     color: #999;
 }
 
-/* Formularios */
 
 .formulario-estandar {
     display: flex;
@@ -322,11 +309,7 @@ body {
 
 .boton-accion-total:hover { opacity: 0.9; }
 
-/* Sweetalert2 */
-
 .swal2-container { z-index: 9999 !important; }
-
-/* Gestión de (doctores.html / especialidades.html)*/
 
 .enlace-activo {
     opacity: 0.8;
@@ -392,8 +375,6 @@ body {
     margin-bottom: 25px;
 }
 
-/* Tabla (doctores, especialidad, horarios) */
-
 .tabla-responsiva { overflow-x: auto; }
 
 .tabla-doctores {
@@ -431,7 +412,6 @@ body {
     padding: 30px;
 }
 
-/* Columna de acciones para que siempre esté en una línea */
 .tabla-doctores td:last-child,
 .tabla-doctores th:last-child {
     white-space: nowrap;
@@ -439,7 +419,6 @@ body {
     text-align: center;
 }
 
-/* Badge Especialidad */
 
 .badge-especialidad {
     background-color: var(--celeste-hospital);
@@ -451,7 +430,6 @@ body {
     display: inline-block;
 }
 
-/* Seleccionar la Especialidad */
 
 .contenedor-selector {
     display: flex;
@@ -482,7 +460,6 @@ body {
     border-color: var(--azul-institucional);
 }
 
-/* botones del formulario */
 
 .fila-botones-formulario {
     display: flex;
@@ -495,7 +472,6 @@ body {
     margin: 0;
 }
 
-/* Cancelar dentro del formulario */
 .fila-botones-formulario .boton-blanco {
     background-color: transparent;
     color: var(--azul-institucional);
@@ -512,9 +488,6 @@ body {
     background-color: var(--azul-institucional);
     color: var(--blanco);
 }
-
-/* Botones de editar y desactivar en la tabla*/
-
 
 .boton-editar {
     background-color: var(--azul-institucional);
@@ -558,11 +531,9 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Oculto */
 
 .oculto { display: none !important; }
 
-/* Responsive */
 
 @media (max-width: 768px) {
     .encabezado-navegacion { flex-direction: column; gap: 15px; text-align: center; }
@@ -573,7 +544,6 @@ body {
     .cabecera-panel        { flex-direction: column; align-items: flex-start; }
     .fila-botones-formulario { flex-direction: column; }
 }
-/* Sacar la Cita*/
 
 .seccion-sacar-cita {
     background-color: var(--blanco);
@@ -601,8 +571,6 @@ body {
     transform: scale(1.05);
     opacity: 0.9;
 }
-/* Flujo de Citas */
-
 .pasos-cita {
     display: flex;
     gap: 10px;
@@ -646,7 +614,6 @@ body {
 
 .boton-volver:hover { text-decoration: underline; }
 
-/* Modal del Resumen de la Cita */
 .resumen-cita {
     background-color: var(--gris-fondo);
     border-radius: 12px;
@@ -659,7 +626,6 @@ body {
 
 .resumen-cita p { font-size: 0.95rem; color: #444; }
 
-/* Pago */
 
 .resumen-pago {
     background-color: var(--gris-fondo);
@@ -727,7 +693,6 @@ body {
     background-color: rgba(0, 74, 153, 0.06);
     box-shadow: 0 0 0 3px rgba(0, 74, 153, 0.15);
 }
-/* pago.html*/
 
 .resumen-pago {
     background: #f8f9fa;
@@ -821,7 +786,6 @@ body {
 
 .boton-volver:hover { text-decoration: underline; }
 
-/* Opcion multiple para horario.html */
 .grupo-checkbox-dias {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -850,15 +814,11 @@ body {
     accent-color: var(--azul-institucional);
 }
 
-/* Responsive */
 @media (max-width: 480px) {
     .grupo-checkbox-dias {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-/* ══════════════════════════════════════════════════════════════
-   SLOTS DE HORARIO
-══════════════════════════════════════════════════════════════ */
 
 .grilla-slots {
     display: grid;
@@ -1136,11 +1096,7 @@ body {
     transform: translateY(-8px);
 
 }
-/* ==========================================================================
-   Nuevas Secciones: Sobre Nosotros, Misión y Visión
-   ========================================================================== */
 
-/* Contenedor principal que centra el contenido al lado de tu menú */
 .content-wrapper {
     padding: 40px;
     max-width: 1100px;
@@ -1148,26 +1104,23 @@ body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Tarjetas contenedor (Base blanca institucional) */
 .about-main-card, .mission-card, .vision-card {
     background: #ffffff;
     border-radius: 8px;
     padding: 40px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     margin-bottom: 30px;
-    border-top: 4px solid #1e3a8a; /* Color azul principal del proyecto */
+    border-top: 4px solid #1e3a8a;
 }
 
-/* Variaciones de color en los bordes superiores para diferenciar las secciones */
 .mission-card {
-    border-top-color: #10b981; /* Verde éxito/estratégico */
+    border-top-color: #10b981;
 }
 
 .vision-card {
-    border-top-color: #6366f1; /* Morado/Índigo tecnológico */
+    border-top-color: #6366f1;
 }
 
-/* Estilos de los Títulos */
 .about-main-card h2, .mission-card h2, .vision-card h2 {
     font-size: 2.2rem;
     margin-bottom: 20px;
@@ -1185,7 +1138,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* Párrafos e información */
+
 .about-main-card p, .mission-card p, .vision-card p {
     line-height: 1.8;
     color: #4a5568; /* Gris oscuro para lectura cómoda */
@@ -1193,7 +1146,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* Grid de Pilares en Sobre Nosotros */
+
 .pillars-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1220,7 +1173,7 @@ body {
     font-weight: 600;
 }
 
-/* Lista de objetivos en Misión */
+
 .objectives-list {
     list-style: none;
     padding: 0;
@@ -1243,7 +1196,7 @@ body {
     font-size: 1.3rem;
 }
 
-/* Bloques de metas en Visión */
+
 .vision-targets {
     display: flex;
     gap: 20px;
@@ -1254,7 +1207,7 @@ body {
 .target-box {
     flex: 1;
     min-width: 280px;
-    background: #f0fdf4; /* Fondo verde muy suave */
+    background: #f0fdf4;
     border: 1px solid #bbf7d0;
     padding: 25px;
     border-radius: 8px;
@@ -1267,17 +1220,12 @@ body {
     font-weight: 600;
 }
 
-/* Ajustes para pantallas pequeñas (Celulares) */
 @media (max-width: 768px) {
     .content-wrapper { padding: 20px; }
     .about-main-card, .mission-card, .vision-card { padding: 25px; }
     .vision-targets { flex-direction: column; }
 }
-/* ==========================================================================
-   Particularidades para los nuevos apartados (Estilos Únicos)
-   ========================================================================= */
 
-/* --- VARIACIÓN SOBRE NOSOTROS (Vertical Banner) --- */
 .contenedor-nosotros-unico {
     max-width: 1000px;
     margin: 40px auto;
@@ -1309,27 +1257,24 @@ body {
     text-align: justify;
 }
 
-/* --- VARIACIÓN MISIÓN (Inversión de Flexbox) --- */
 .bloque-mision-invertido {
     flex-direction: row-reverse !important; /* Mueve la imagen a la izquierda y el texto a la derecha */
 }
 
-/* --- VARIACIÓN VISIÓN (Tarjeta Centralizada Flotante) --- */
 .contenedor-vision-unico {
     padding: 80px 20px;
-    background-color: #f4f9fc; /* Fondo celeste muy sutil */
+    background-color: #f4f9fc;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .tarjeta-vision-flotante {
     background: #ffffff;
     max-width: 750px;
     padding: 50px;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 209, 255, 0.08);
-    border-left: 6px solid #00d1ff; /* Detalle con el color celeste característico */
+    border-left: 6px solid #00d1ff;
 }
 
 .tarjeta-vision-flotante h2 {
@@ -1352,7 +1297,6 @@ body {
     margin-bottom: 15px;
 }
 
-/* Ajustes para que no se rompa el diseño en celulares */
 @media (max-width: 768px) {
     .bloque-mision-invertido {
         flex-direction: column-reverse !important;
