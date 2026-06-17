@@ -11,7 +11,7 @@
 <header class="encabezado-navegacion">
     <div class="logotipo">
         <img src="/imagenes/logomuni.png" alt="Logo Hospital">
-        <h1>Hospital Solidaridad</h1>
+        <h1>Hospital de la Solidaridad</h1>
     </div>
     <nav class="menu-principal" id="menu-nav">
         <a href="#">Inicio</a>
@@ -189,8 +189,8 @@
             <input type="email" name="correo" placeholder="Correo" maxlength="100" required>
             <input type="text" name="dni" placeholder="DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);" required>
             <input type="text" name="telefono" placeholder="Teléfono" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 15);">
-            <input type="date" name="fechaNac">
-            <input type="text" name="direccion" placeholder="Dirección" maxlength="150">
+            <input type="date" name="fechaNac" required>
+            <input type="text" name="direccion" placeholder="Dirección" maxlength="150" required>
             <input type="password" name="password" placeholder="Contraseña" maxlength="50" required>
             <button type="submit" class="boton-accion-total">Crear cuenta</button>
         </form>

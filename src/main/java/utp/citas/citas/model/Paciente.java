@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "pacientes")
@@ -34,6 +37,14 @@ public class Paciente {
     private String dni;
 
     private String telefono;
+
+    @NotNull(message = "La fecha de nacimiento es obligatoria")
+    @Column(name = "fecha_nac", nullable = false)
+    private LocalDate fechaNac;
+
+    @NotBlank(message = "La dirección es obligatoria")
+    @Column(name = "direccion", nullable = false)
+    private String direccion;
 
     @NotBlank(message = "La contraseña es obligatoria.")
     @Size(max = 255)
