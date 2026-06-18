@@ -1753,3 +1753,7 @@ function cerrarModal() {
         .style.display = "none";
 
 }
+
+function descargarReporteDoctores() {
+    window.open('/api/reportes/doctores/pdf', '_blank');
+}

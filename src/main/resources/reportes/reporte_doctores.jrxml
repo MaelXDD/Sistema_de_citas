@@ -1,0 +1,93 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="reporte_doctores" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Supabase Hospital Citas"/>
+	<query language="SQL"><![CDATA[SELECT d.dni, d.nombres, d.apellidos, d.telefono, d.correo, e.nombre as especialidad 
+FROM doctores d 
+JOIN especialidades e ON d.id_especialidad = e.id_especialidad 
+WHERE d.activo = true]]></query>
+	<field name="nombres" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombres"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombres"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="doctores"/>
+	</field>
+	<field name="apellidos" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="apellidos"/>
+		<property name="com.jaspersoft.studio.field.label" value="apellidos"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="doctores"/>
+	</field>
+	<field name="dni" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="dni"/>
+		<property name="com.jaspersoft.studio.field.label" value="dni"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="doctores"/>
+	</field>
+	<field name="telefono" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.label" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="doctores"/>
+	</field>
+	<field name="correo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="correo"/>
+		<property name="com.jaspersoft.studio.field.label" value="correo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="doctores"/>
+	</field>
+	<field name="especialidad" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="especialidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="especialidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="especialidades"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="79" splitType="Stretch">
+		<element kind="staticText" uuid="79bae0c5-8b75-4109-abf6-15cecaf2e442" x="196" y="12" width="163" height="55" fontSize="19.0" bold="true" hTextAlign="Center">
+			<text><![CDATA[Directorio de Especialistas]]></text>
+		</element>
+	</title>
+	<columnHeader height="110" splitType="Stretch">
+		<element kind="staticText" uuid="38c2e37a-1c3e-4690-983b-7c170318697b" x="15" y="31" width="40" height="18" hTextAlign="Center">
+			<text><![CDATA[DNI]]></text>
+		</element>
+		<element kind="staticText" uuid="355058a3-a1f0-4deb-9dc6-a975d7a067ca" x="80" y="30" width="50" height="15" hTextAlign="Center">
+			<text><![CDATA[NOMBRES]]></text>
+		</element>
+		<element kind="staticText" uuid="02751594-bd61-4dff-8307-5464c277ebe4" x="160" y="30" width="80" height="21" hTextAlign="Center">
+			<text><![CDATA[APELLIDOS]]></text>
+		</element>
+		<element kind="staticText" uuid="806058c9-9eba-4e56-91de-550c4c7793fe" x="260" y="30" width="75" height="21" hTextAlign="Center">
+			<text><![CDATA[TELÉFONO]]></text>
+		</element>
+		<element kind="staticText" uuid="9e301864-ff99-469d-ab54-f2c358dbe2e3" x="460" y="30" width="90" height="20" hTextAlign="Center">
+			<text><![CDATA[Especialidad]]></text>
+		</element>
+		<element kind="staticText" uuid="778de71d-8159-480e-993f-db45608f249a" x="350" y="31" width="70" height="20" hTextAlign="Center">
+			<text><![CDATA[CORREO]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<element kind="textField" uuid="419abf5e-222c-4d7f-86c2-f0f05e4dcbcd" x="80" y="50" width="50" height="30">
+				<expression><![CDATA[$F{nombres}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a7af8a60-9563-442e-ac8b-6634b43b1423"/>
+			</element>
+			<element kind="textField" uuid="4e7597b0-0abd-45b1-914a-794b7658cb8b" x="175" y="50" width="50" height="30">
+				<expression><![CDATA[$F{apellidos}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="958bd8d9-6ee8-4215-8a92-5e9f9a31a458"/>
+			</element>
+			<element kind="textField" uuid="27debead-34d6-4d92-8a3d-d334b83c76ae" x="10" y="50" width="50" height="30">
+				<expression><![CDATA[$F{dni}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cb948841-a684-47e3-baaa-a62bf6d8b77d"/>
+			</element>
+			<element kind="textField" uuid="f58fe8ed-64c2-472e-a3e4-e933ea76c53e" x="272" y="50" width="50" height="30">
+				<expression><![CDATA[$F{telefono}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6af04e21-0ef2-4f8c-80a2-ee11e8dfffe9"/>
+			</element>
+			<element kind="textField" uuid="ab4de8a1-2362-4dce-b343-701972455bee" x="360" y="50" width="50" height="30">
+				<expression><![CDATA[$F{correo}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="567f8bcc-84b5-4390-b090-adc3a747b4cc"/>
+			</element>
+			<element kind="textField" uuid="054c80e9-3459-48e3-aa1b-5a3fe4bf693c" x="480" y="47" width="50" height="30">
+				<expression><![CDATA[$F{especialidad}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d146ac2a-30e1-4f00-a388-c11dc98033ae"/>
+			</element>
+		</band>
+	</detail>
+</jasperReport>
