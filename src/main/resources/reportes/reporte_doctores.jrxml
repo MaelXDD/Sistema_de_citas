@@ -1,5 +1,5 @@
-<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
-<jasperReport name="reporte_doctores" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.0  -->
+<jasperReport name="reporte_doctores" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eb02c529-5478-494f-a896-5a6b5bb424fc">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Supabase Hospital Citas"/>
 	<query language="SQL"><![CDATA[SELECT d.dni, d.nombres, d.apellidos, d.telefono, d.correo, e.nombre as especialidad 
@@ -58,7 +58,7 @@ WHERE d.activo = true]]></query>
 		<element kind="staticText" uuid="9e301864-ff99-469d-ab54-f2c358dbe2e3" x="460" y="30" width="90" height="20" hTextAlign="Center">
 			<text><![CDATA[Especialidad]]></text>
 		</element>
-		<element kind="staticText" uuid="778de71d-8159-480e-993f-db45608f249a" x="350" y="31" width="70" height="20" hTextAlign="Center">
+		<element kind="staticText" uuid="778de71d-8159-480e-993f-db45608f249a" x="370" y="27" width="70" height="20" hTextAlign="Center">
 			<text><![CDATA[CORREO]]></text>
 		</element>
 	</columnHeader>
@@ -72,19 +72,19 @@ WHERE d.activo = true]]></query>
 				<expression><![CDATA[$F{apellidos}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="958bd8d9-6ee8-4215-8a92-5e9f9a31a458"/>
 			</element>
-			<element kind="textField" uuid="27debead-34d6-4d92-8a3d-d334b83c76ae" x="10" y="50" width="50" height="30">
+			<element kind="textField" uuid="27debead-34d6-4d92-8a3d-d334b83c76ae" x="15" y="50" width="50" height="30">
 				<expression><![CDATA[$F{dni}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cb948841-a684-47e3-baaa-a62bf6d8b77d"/>
 			</element>
-			<element kind="textField" uuid="f58fe8ed-64c2-472e-a3e4-e933ea76c53e" x="272" y="50" width="50" height="30">
+			<element kind="textField" uuid="f58fe8ed-64c2-472e-a3e4-e933ea76c53e" x="272" y="50" width="68" height="30">
 				<expression><![CDATA[$F{telefono}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6af04e21-0ef2-4f8c-80a2-ee11e8dfffe9"/>
 			</element>
-			<element kind="textField" uuid="ab4de8a1-2362-4dce-b343-701972455bee" x="360" y="50" width="50" height="30">
+			<element kind="textField" uuid="ab4de8a1-2362-4dce-b343-701972455bee" x="370" y="50" width="70" height="30">
 				<expression><![CDATA[$F{correo}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="567f8bcc-84b5-4390-b090-adc3a747b4cc"/>
 			</element>
-			<element kind="textField" uuid="054c80e9-3459-48e3-aa1b-5a3fe4bf693c" x="480" y="47" width="50" height="30">
+			<element kind="textField" uuid="054c80e9-3459-48e3-aa1b-5a3fe4bf693c" x="480" y="47" width="65" height="33">
 				<expression><![CDATA[$F{especialidad}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d146ac2a-30e1-4f00-a388-c11dc98033ae"/>
 			</element>
