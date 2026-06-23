@@ -41,6 +41,9 @@ WHERE d.activo = true]]></query>
 		<element kind="staticText" uuid="79bae0c5-8b75-4109-abf6-15cecaf2e442" x="196" y="12" width="163" height="55" fontSize="19.0" bold="true" hTextAlign="Center">
 			<text><![CDATA[Directorio de Especialistas]]></text>
 		</element>
+		<element kind="image" uuid="818e4792-547e-4307-90ec-f969be1d6eb6" x="6" y="25" width="169" height="29">
+			<expression><![CDATA["C:/Users/JHEINS/Desktop/Sistema_Citas/Sistema_de_citas/src/main/resources/static/imagenes/LOGO_licencias.jpg"]]></expression>
+		</element>
 	</title>
 	<columnHeader height="110" splitType="Stretch">
 		<element kind="staticText" uuid="38c2e37a-1c3e-4690-983b-7c170318697b" x="15" y="31" width="40" height="18" hTextAlign="Center">
