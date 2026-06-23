@@ -1767,3 +1767,6 @@ window.descargarReporteDoctores = function() {
 window.descargarReporte = function(url) {
     window.open(url, '_blank');
 };
+window.descargarReporteEspecialidades = function() {
+    window.open(API + '/api/reportes/especialidades/pdf', '_blank');
+};
