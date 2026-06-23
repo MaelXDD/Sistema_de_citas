@@ -1545,6 +1545,12 @@ function iniciarModuloMisCitas() {
                             <span>Motivo:</span>
                             ${cita.motivo ?? 'No especificado'}
                         </div>
+                        
+                        ${cita.estado === 'CONFIRMADA' ? `
+                            <button class="boton-imprimir" onclick="descargarReporte('${API}/api/reportes/citas/${cita.idCita}/pdf')">
+                                 Imprimir Comprobante
+                            </button>
+                        ` : ''}
 
 ${cita.estado !== 'CANCELADA' ? `
     <button class="boton-cancelar"
@@ -1754,6 +1760,10 @@ function cerrarModal() {
 
 }
 
-function descargarReporteDoctores() {
-    window.open('/api/reportes/doctores/pdf', '_blank');
-}
+window.descargarReporteDoctores = function() {
+    descargarReporte('/api/reportes/doctores/pdf');
+};
+
+window.descargarReporte = function(url) {
+    window.open(url, '_blank');
+};

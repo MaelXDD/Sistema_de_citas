@@ -2,10 +2,10 @@ package utp.citas.citas.service.impl;
 
 import net.sf.jasperreports.engine.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.sql.DataSource;
-import java.io.File;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,18 +20,25 @@ public class ReporteService {
     }
 
     public byte[] generarDirectorioDoctoresPDF() throws Exception {
-        // 1. Usar ClassPathResource e InputStream (A prueba de archivos .jar)
-        java.io.InputStream jrxmlInput = new org.springframework.core.io.ClassPathResource("reportes/reporte_doctores.jrxml").getInputStream();
+        InputStream jrxmlInput = new ClassPathResource("reportes/reporte_doctores.jrxml").getInputStream();
         JasperReport jasperReport = JasperCompileManager.compileReport(jrxmlInput);
-
-        // 2. Mapa vacío porque es un reporte estático
         Map<String, Object> parameters = new HashMap<>();
 
-        // 3. Llenar el reporte usando la conexión directa a PostgreSQL
         try (Connection conn = dataSource.getConnection()) {
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        }
+    }
 
-            // 4. Retornar el PDF en arreglo de bytes
+    public byte[] generarReporteCitaPDF(Integer idCita) throws Exception {
+        InputStream jrxmlInput = new ClassPathResource("reportes/ReporteCita.jrxml").getInputStream();
+        JasperReport jasperReport = JasperCompileManager.compileReport(jrxmlInput);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id_cita", idCita);
+
+        try (Connection conn = dataSource.getConnection()) {
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
             return JasperExportManager.exportReportToPdf(jasperPrint);
         }
     }
