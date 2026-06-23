@@ -3,6 +3,7 @@
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sistema_Citas"/>
 	<parameter name="id_cita" class="java.lang.Integer"/>
+	<parameter name="logo" class="java.io.InputStream"/>
 	<query language="SQL"><![CDATA[SELECT 
     p.nombres || ' ' || p.apellidos AS nombre_paciente,
     p.dni,
@@ -60,7 +61,7 @@ WHERE c.id_cita = $P{id_cita}]]></query>
 	<background splitType="Stretch"/>
 	<title height="131" splitType="Stretch">
 		<element kind="image" uuid="3c89245e-e5f8-4d83-afd9-3776513fa630" x="20" y="17" width="170" height="50">
-			<expression><![CDATA["C:/Users/Alessandro/OneDrive/Imágenes/logomunicipalidad.png"]]></expression>
+			<expression><![CDATA[$P{logo}]]></expression>
 		</element>
 		<element kind="staticText" uuid="d0ccd11c-ce15-4550-8d25-4ec50e28cdeb" x="220" y="27" width="280" height="30" fontSize="19.0" hTextAlign="Center">
 			<text><![CDATA[COMPROBANTE DE CITA MÉDICA]]></text>
