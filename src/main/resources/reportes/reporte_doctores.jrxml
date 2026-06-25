@@ -1,4 +1,4 @@
-<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.0  -->
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.0  -->
 <jasperReport name="reporte_doctores" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eb02c529-5478-494f-a896-5a6b5bb424fc">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Supabase Hospital Citas"/>
@@ -39,10 +39,10 @@ WHERE d.activo = true]]></query>
 	</field>
 	<background splitType="Stretch"/>
 	<title height="79" splitType="Stretch">
-		<element kind="staticText" uuid="79bae0c5-8b75-4109-abf6-15cecaf2e442" x="200" y="15" width="274" height="55" fontSize="19.0" bold="true" hTextAlign="Center">
+		<element kind="staticText" uuid="79bae0c5-8b75-4109-abf6-15cecaf2e442" x="280" y="12" width="274" height="55" fontSize="19.0" bold="true" hTextAlign="Center">
 			<text><![CDATA[Directorio de Especialistas]]></text>
 		</element>
-		<element kind="image" uuid="e33e17d0-afd9-4515-85b5-40b0807418fe" x="20" y="17" width="170" height="50">
+		<element kind="image" uuid="38defb50-d8fa-4899-a756-a15eeb376bd3" x="0" y="0" width="260" height="60">
 			<expression><![CDATA[$P{logo}]]></expression>
 		</element>
 	</title>
@@ -98,7 +98,7 @@ WHERE d.activo = true]]></query>
 		<property name="com.jaspersoft.studio.unit.height" value="px"/>
 	</columnHeader>
 	<detail>
-		<band height="61" splitType="Stretch">
+		<band height="30" splitType="Stretch">
 			<element kind="textField" uuid="27debead-34d6-4d92-8a3d-d334b83c76ae" x="20" y="0" width="54" height="30">
 				<expression><![CDATA[$F{dni}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cb948841-a684-47e3-baaa-a62bf6d8b77d"/>
@@ -109,7 +109,7 @@ WHERE d.activo = true]]></query>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 			</element>
-			<element kind="textField" uuid="419abf5e-222c-4d7f-86c2-f0f05e4dcbcd" x="75" y="0" width="82" height="30">
+			<element kind="textField" uuid="419abf5e-222c-4d7f-86c2-f0f05e4dcbcd" x="74" y="0" width="82" height="30">
 				<expression><![CDATA[$F{nombres}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a7af8a60-9563-442e-ac8b-6634b43b1423"/>
 				<box>
@@ -119,7 +119,7 @@ WHERE d.activo = true]]></query>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 			</element>
-			<element kind="textField" uuid="4e7597b0-0abd-45b1-914a-794b7658cb8b" x="157" y="0" width="102" height="30">
+			<element kind="textField" uuid="4e7597b0-0abd-45b1-914a-794b7658cb8b" x="156" y="0" width="102" height="30">
 				<expression><![CDATA[$F{apellidos}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="958bd8d9-6ee8-4215-8a92-5e9f9a31a458"/>
 				<box>
@@ -129,7 +129,7 @@ WHERE d.activo = true]]></query>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 			</element>
-			<element kind="textField" uuid="f58fe8ed-64c2-472e-a3e4-e933ea76c53e" x="259" y="0" width="98" height="30">
+			<element kind="textField" uuid="f58fe8ed-64c2-472e-a3e4-e933ea76c53e" x="258" y="0" width="98" height="30">
 				<expression><![CDATA[$F{telefono}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6af04e21-0ef2-4f8c-80a2-ee11e8dfffe9"/>
 				<box>
@@ -139,7 +139,7 @@ WHERE d.activo = true]]></query>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 			</element>
-			<element kind="textField" uuid="ab4de8a1-2362-4dce-b343-701972455bee" x="357" y="0" width="90" height="30">
+			<element kind="textField" uuid="ab4de8a1-2362-4dce-b343-701972455bee" x="356" y="0" width="90" height="30">
 				<expression><![CDATA[$F{correo}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="567f8bcc-84b5-4390-b090-adc3a747b4cc"/>
 				<box>
@@ -149,7 +149,7 @@ WHERE d.activo = true]]></query>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 			</element>
-			<element kind="textField" uuid="054c80e9-3459-48e3-aa1b-5a3fe4bf693c" x="447" y="0" width="115" height="30">
+			<element kind="textField" uuid="054c80e9-3459-48e3-aa1b-5a3fe4bf693c" x="446" y="0" width="116" height="30">
 				<expression><![CDATA[$F{especialidad}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d146ac2a-30e1-4f00-a388-c11dc98033ae"/>
 				<box>
@@ -167,12 +167,6 @@ WHERE d.activo = true]]></query>
 	<pageFooter height="50">
 		<element kind="staticText" uuid="cc56a7ea-7fee-4ffa-97af-4871dbd91ac1" x="0" y="13" width="210" height="24" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Hospital de la Solidaridad - Vitarte]]></text>
-			<box>
-				<pen lineWidth="0.5" lineColor="#FFFFFF"/>
-			</box>
-		</element>
-		<element kind="textField" uuid="5873bd94-d263-4bfc-a6dd-72c4ffc49e02" x="400" y="10" width="150" height="30">
-			<expression><![CDATA["Página " + $V{PAGE_NUMBER} + " de " + $V{PAGE_COUNT}]]></expression>
 			<box>
 				<pen lineWidth="0.5" lineColor="#FFFFFF"/>
 			</box>

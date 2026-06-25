@@ -33,7 +33,6 @@ public class DoctorController {
     }
 
     // GET /api/doctores/especialidad/{idEspecialidad}
-    // → Endpoint clave para mostrar médicos disponibles por especialidad
     @GetMapping("/especialidad/{idEspecialidad}")
     public ResponseEntity<List<Doctor>> listarPorEspecialidad(
             @PathVariable Integer idEspecialidad) {
@@ -53,7 +52,6 @@ public class DoctorController {
     }
 
     // GET /api/doctores/{id}/horarios/{dia}
-    // → ej: /api/doctores/3/horarios/LUNES
     @GetMapping("/{id}/horarios/{dia}")
     public ResponseEntity<List<Horario>> obtenerHorariosPorDia(
             @PathVariable Integer id,
