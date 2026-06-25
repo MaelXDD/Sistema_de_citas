@@ -1761,7 +1761,7 @@ function cerrarModal() {
 }
 
 window.descargarReporteDoctores = function() {
-    descargarReporte('/api/reportes/doctores/pdf');
+    descargarReporte(API+ '/api/reportes/doctores/pdf');
 };
 
 window.descargarReporte = function(url) {

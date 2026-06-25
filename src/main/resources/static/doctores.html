@@ -17,7 +17,6 @@
         <a href="/especialidades.html">Especialidades</a>
         <a href="/doctores.html" class="enlace-activo">Doctores</a>
         <a href="/horarios.html">Horarios</a>
-        <button onclick="descargarReporteDoctores()" class="btn btn-primary">Descargar Directorio PDF</button>
     </nav>
     <div class="botones-acceso">
         <button class="boton-blanco" id="btnRegresarHome">Regresar</button>
@@ -30,10 +29,13 @@
                 <h2>Staff Médico Actual</h2>
                 <p>Lista de especialistas conectados desde Supabase.</p>
             </div>
-            <button id="btnMostrarForm" class="boton-accion-total">
-                + Registrar Nuevo Doctor
-            </button>
+            <div style="display:flex; gap:10px;">
+                <button onclick="descargarReporteDoctores()" class="boton-blanco" style="border:2px solid var(--azul-institucional);">Descargar Reporte PDF</button>
+                <button id="btnMostrarForm" class="boton-accion-total"> + Registrar Nuevo Doctor </button>
+            </div>
+
         </div>
+
         <div class="tabla-responsiva">
             <table class="tabla-doctores">
                 <thead>
