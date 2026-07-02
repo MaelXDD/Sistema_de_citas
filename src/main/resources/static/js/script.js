@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     iniciarModuloEspecialidades();
     iniciarModuloCitas();
     iniciarModuloPago();
+    iniciarModuloEstadisticas();
 });
 
 //  Modulo de Sesión Global
@@ -1770,3 +1771,79 @@ window.descargarReporte = function(url) {
 window.descargarReporteEspecialidades = function() {
     window.open(API + '/api/reportes/especialidades/pdf', '_blank');
 };
+
+window.buscarEstadisticas = async function() {
+    const tbody          = document.getElementById('tablaEstadisticasBody');
+    const idEspecialidad = document.getElementById('filtroEspecialidad').value;
+    const estado         = document.getElementById('filtroEstado').value;
+
+    tbody.innerHTML = '<tr><td colspan="4" class="celda-estado">Cargando...</td></tr>';
+
+    let url = `${API}/api/reportes/estadisticas/doctores-citas?`;
+    if (idEspecialidad) url += `idEspecialidad=${idEspecialidad}&`;
+    if (estado)         url += `estado=${estado}`;
+
+    try {
+        const res  = await fetch(url);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="celda-estado">No se encontraron resultados.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map((item, i) => `
+            <tr>
+                <td style="text-align:center; font-weight:bold; color:var(--azul-institucional);">${i + 1}</td>
+                <td>${item.apellidos}, ${item.nombres}</td>
+                <td><span class="badge-especialidad">${item.especialidad}</span></td>
+                <td style="text-align:center; font-weight:bold;">${item.totalCitas}</td>
+                <td style="text-align:center; font-weight:bold;">S/ ${parseFloat(item.ingresos).toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+    } catch {
+        tbody.innerHTML = '<tr><td colspan="4" class="celda-estado" style="color:red;">Error al cargar estadísticas.</td></tr>';
+    }
+};
+
+window.limpiarFiltros = function() {
+    document.getElementById('filtroEspecialidad').selectedIndex = 0;
+    document.getElementById('filtroEstado').selectedIndex       = 0;
+    document.getElementById('tablaEstadisticasBody').innerHTML  =
+        '<tr><td colspan="4" class="celda-estado">Aplica los filtros y haz clic en Buscar.</td></tr>';
+};
+
+function iniciarModuloEstadisticas() {
+    const tbody = document.getElementById('tablaEstadisticasBody');
+    if (!tbody) return;
+
+    const paciente = JSON.parse(sessionStorage.getItem('paciente'));
+    if (!paciente || paciente.rol !== 'ADMIN') {
+        window.location.href = '/index.html';
+        return;
+    }
+
+    async function cargarFiltroEspecialidades() {
+        try {
+            const res    = await fetch(`${API}/api/especialidades/activas`);
+            const lista  = await res.json();
+            const select = document.getElementById('filtroEspecialidad');
+            select.innerHTML = '<option value="">Todas las especialidades</option>';
+            lista.forEach(esp => {
+                const opt       = document.createElement('option');
+                opt.value       = esp.idEspecialidad;
+                opt.textContent = esp.nombre;
+                select.appendChild(opt);
+            });
+        } catch(e) {
+            console.error('Error cargando especialidades:', e);
+        }
+    }
+
+    document.getElementById('btnBuscarEstadisticas')
+        .addEventListener('click', window.buscarEstadisticas);
+
+    cargarFiltroEspecialidades();
+}

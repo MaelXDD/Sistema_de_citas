@@ -1322,3 +1322,22 @@ html {
 .boton-imprimir:hover {
     opacity: 0.9;
 }
+/* Estadísticas */
+.filtros-estadisticas {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.filtros-estadisticas .contenedor-selector {
+    flex: 1;
+    min-width: 180px;
+}
+
+.fila-botones-filtro {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
