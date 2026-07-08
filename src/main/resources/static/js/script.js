@@ -1846,4 +1846,49 @@ function iniciarModuloEstadisticas() {
         .addEventListener('click', window.buscarEstadisticas);
 
     cargarFiltroEspecialidades();
+    cargarIngresosEspecialidad();
+}
+
+async function cargarIngresosEspecialidad(){
+
+    try{
+
+        const response = await fetch(
+            API + "/api/reportes/estadisticas/ingresos-especialidad"
+        );
+
+        const datos = await response.json();
+
+        const tabla = document.getElementById("tablaIngresosBody");
+
+        if(!tabla) return;
+
+        tabla.innerHTML = "";
+
+        datos.forEach(item=>{
+
+            tabla.innerHTML += `
+
+                <tr>
+
+                    <td>${item.especialidad}</td>
+
+                    <td>${item.totalCitas}</td>
+
+                    <td>${item.pacientesUnicos}</td>
+
+                    <td>S/. ${item.ingresos}</td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
 }

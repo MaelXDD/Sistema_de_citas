@@ -6,9 +6,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utp.citas.citas.model.DoctorCitasDTO;
+import utp.citas.citas.model.EspecialidadDTO;
 import utp.citas.citas.repository.CitaRepository;
 import utp.citas.citas.service.impl.ReporteService;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -84,5 +87,36 @@ public class ReporteController {
                 ))
                 .collect(java.util.stream.Collectors.toList());
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/estadisticas/ingresos-especialidad")
+    public List<EspecialidadDTO> especialidadDTOS(){
+
+        List<Object[]> datos = citaRepository.ingresosEspecialidad();
+
+        List<EspecialidadDTO> lista = new ArrayList<>();
+
+        for(Object[] fila : datos){
+
+            lista.add(
+
+                    new EspecialidadDTO(
+
+                            fila[0].toString(),
+
+                            ((Number) fila[1]).longValue(),
+
+                            ((Number) fila[2]).longValue(),
+
+                            (BigDecimal) fila[3]
+
+                    )
+
+            );
+
+        }
+
+        return lista;
+
     }
 }

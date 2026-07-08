@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface CitaRepository extends JpaRepository<Cita, Integer> {
+public interface    CitaRepository extends JpaRepository<Cita, Integer> {
 
     List<Cita> findByPaciente_IdPaciente(Integer idPaciente);
 
@@ -54,4 +54,33 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
             @Param("estado") String estado
     );
 
+    @Query(value = """
+
+SELECT
+
+e.nombre,
+COUNT(c.id_cita),
+COUNT(DISTINCT c.id_paciente),
+COALESCE(SUM(p.monto), 0) AS ingresos
+
+FROM especialidades e
+
+INNER JOIN doctores d
+ON e.id_especialidad=d.id_especialidad
+
+INNER JOIN citas c
+ON d.id_doctor=c.id_doctor
+
+INNER JOIN pagos p
+ON c.id_cita=p.id_cita
+
+WHERE p.estado_pago='COMPLETADO'
+
+GROUP BY e.nombre
+
+ORDER BY SUM(p.monto) DESC
+
+""", nativeQuery = true)
+
+    List<Object[]> ingresosEspecialidad();
 }

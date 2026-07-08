@@ -26,62 +26,144 @@
 </header>
 
 <main class="area-gestion-medica">
-    <div class="tarjeta-panel">
 
-        <div class="cabecera-panel">
-            <div class="titulos-seccion">
-                <h2>Estadísticas de Citas por Doctor</h2>
-                <p>Consulta el rendimiento de cada médico según especialidad y estado de cita.</p>
+    <div class="contenedor-estadisticas">
+
+        <!-- ====================== PRIMER REPORTE ====================== -->
+        <div class="tarjeta-panel">
+
+            <div class="cabecera-panel">
+                <div class="titulos-seccion">
+                    <h2>Estadísticas de Citas por Doctor</h2>
+                    <p>Consulta el rendimiento de cada médico según especialidad y estado de cita.</p>
+                </div>
             </div>
+
+            <!-- FILTROS -->
+            <div class="filtros-estadisticas">
+
+                <div class="contenedor-selector">
+                    <label class="etiqueta-selector">Especialidad:</label>
+                    <select id="filtroEspecialidad" class="selector-estandar">
+                        <option value="">Todas las especialidades</option>
+                    </select>
+                </div>
+
+                <div class="contenedor-selector">
+                    <label class="etiqueta-selector">Estado de Cita:</label>
+                    <select id="filtroEstado" class="selector-estandar">
+                        <option value="">Todos los estados</option>
+                        <option value="CONFIRMADA">Confirmada</option>
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="COMPLETADA">Completada</option>
+                    </select>
+                </div>
+
+                <div class="fila-botones-filtro">
+                    <button class="boton-azul" id="btnBuscarEstadisticas">
+                        Buscar
+                    </button>
+
+                    <button class="boton-blanco" onclick="limpiarFiltros()">
+                        ↺ Limpiar
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- TABLA -->
+            <div class="tabla-responsiva" style="margin-top:20px;">
+
+                <table class="tabla-doctores">
+
+                    <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Doctor</th>
+                        <th>Especialidad</th>
+                        <th>Total Citas</th>
+                        <th>Ingresos</th>
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="tablaEstadisticasBody">
+
+                    <tr>
+                        <td colspan="5" class="celda-estado">
+                            Aplica los filtros y haz clic en Buscar.
+                        </td>
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </div>
 
-        <!-- FILTROS -->
-        <div class="filtros-estadisticas">
-            <div class="contenedor-selector">
-                <label class="etiqueta-selector">Especialidad:</label>
-                <select id="filtroEspecialidad" class="selector-estandar">
-                    <option value="">Todas las especialidades</option>
-                </select>
+        <!-- ====================== SEGUNDO REPORTE ====================== -->
+
+        <div class="tarjeta-panel">
+
+            <div class="cabecera-panel">
+                <div class="titulos-seccion">
+
+                    <h2>Ingresos por Especialidad</h2>
+
+                    <p>
+                        Reporte consolidado de citas,
+                        pacientes atendidos e ingresos generados
+                        por cada especialidad médica.
+                    </p>
+
+                </div>
             </div>
 
-            <div class="contenedor-selector">
-                <label class="etiqueta-selector">Estado de Cita:</label>
-                <select id="filtroEstado" class="selector-estandar">
-                    <option value="">Todos los estados</option>
-                    <option value="CONFIRMADA">Confirmada</option>
-                    <option value="PENDIENTE">Pendiente</option>
-                    <option value="COMPLETADA">Completada</option>
-                </select>
+            <div class="tabla-responsiva" style="margin-top:20px;">
+
+                <table class="tabla-doctores">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Especialidad</th>
+                        <th>Total Citas</th>
+                        <th>Pacientes</th>
+                        <th>Ingresos</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="tablaIngresosBody">
+
+                    <tr>
+
+                        <td colspan="5" class="celda-estado">
+
+                            Cargando información...
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
             </div>
 
-            <div class="fila-botones-filtro">
-                <button class="boton-azul" id="btnBuscarEstadisticas">Buscar</button>
-                <button class="boton-blanco" onclick="limpiarFiltros()">↺ Limpiar</button>
-            </div>
-        </div>
-
-        <!-- TABLA RESULTADOS -->
-        <div class="tabla-responsiva" style="margin-top: 20px;">
-            <table class="tabla-doctores">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Doctor</th>
-                    <th>Especialidad</th>
-                    <th>Total Citas</th>
-                    <th>Ingresos</th>
-                </tr>
-                </thead>
-                <tbody id="tablaEstadisticasBody">
-                <tr>
-                    <td colspan="4" class="celda-estado">Aplica los filtros y haz clic en Buscar.</td>
-                </tr>
-                </tbody>
-            </table>
         </div>
 
     </div>
+
 </main>
+
+
 
 <script>
     const paciente = JSON.parse(sessionStorage.getItem('paciente'));
