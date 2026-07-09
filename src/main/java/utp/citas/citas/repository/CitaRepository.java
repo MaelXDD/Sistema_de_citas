@@ -5,13 +5,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import utp.citas.citas.model.Cita;
-import utp.citas.citas.model.DoctorCitasDTO;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface    CitaRepository extends JpaRepository<Cita, Integer> {
+public interface CitaRepository extends JpaRepository<Cita, Integer> {
 
     List<Cita> findByPaciente_IdPaciente(Integer idPaciente);
 
@@ -22,6 +21,34 @@ public interface    CitaRepository extends JpaRepository<Cita, Integer> {
     boolean existsByDoctor_IdDoctorAndFechaCitaAndHoraCitaAndEstadoNot(
             Integer idDoctor, LocalDate fechaCita, java.time.LocalTime horaCita, String estado
     );
+
+
+    @Query(value = """
+        SELECT
+            e.nombre,
+            COUNT(c.id_cita) AS total_citas,
+            COUNT(DISTINCT c.id_paciente) AS pacientes,
+            COALESCE(SUM(pa.monto), 0) AS ingresos  
+        FROM
+            especialidades e  
+        INNER JOIN
+            doctores d 
+                ON e.id_especialidad = d.id_especialidad  
+        INNER JOIN
+            citas c 
+                ON d.id_doctor = c.id_doctor  
+        INNER JOIN
+            pagos pa 
+                ON c.id_cita = pa.id_cita  
+        WHERE
+            pa.estado_pago = 'COMPLETADO'  
+        GROUP BY
+            e.nombre  
+        ORDER BY
+            SUM(pa.monto) DESC
+    """, nativeQuery = true)
+    List<Object[]> ingresosEspecialidad();
+
 
     @Query(value = """
     SELECT * FROM (
