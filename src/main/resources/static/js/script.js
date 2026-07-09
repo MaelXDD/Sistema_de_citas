@@ -1846,49 +1846,71 @@ function iniciarModuloEstadisticas() {
         .addEventListener('click', window.buscarEstadisticas);
 
     cargarFiltroEspecialidades();
-    cargarIngresosEspecialidad();
+    cargarFiltroEspecialidadesPacientes();
+
+document.getElementById('btnBuscarPacientesEspecialidad')
+    .addEventListener('click', window.buscarPacientesEspecialidad);
 }
 
-async function cargarIngresosEspecialidad(){
+async function cargarFiltroEspecialidadesPacientes() {
+    try {
+        const res    = await fetch(`${API}/api/especialidades/activas`);
+        const lista  = await res.json();
+        const select = document.getElementById('filtroEspecialidadPacientes');
+        select.innerHTML = '<option value="">Selecciona una especialidad</option>';
+        lista.forEach(esp => {
+            const opt       = document.createElement('option');
+            opt.value       = esp.idEspecialidad;
+            opt.textContent = esp.nombre;
+            select.appendChild(opt);
+        });
+    } catch(e) {
+        console.error('Error cargando especialidades:', e);
+    }
+}
 
-    try{
+window.buscarPacientesEspecialidad = async function() {
+    const tabla           = document.getElementById('tablaIngresosBody');
+    const idEspecialidad  = document.getElementById('filtroEspecialidadPacientes').value;
 
+    if (!idEspecialidad) {
+        tabla.innerHTML = '<tr><td colspan="4" class="celda-estado">Selecciona una especialidad primero.</td></tr>';
+        return;
+    }
+
+    tabla.innerHTML = '<tr><td colspan="4" class="celda-estado">Cargando...</td></tr>';
+
+    try {
         const response = await fetch(
-            API + "/api/reportes/estadisticas/ingresos-especialidad"
+            `${API}/api/reportes/estadisticas/pacientes-especialidad?idEspecialidad=${idEspecialidad}`
         );
+
+        if (!response.ok) throw new Error();
 
         const datos = await response.json();
 
-        const tabla = document.getElementById("tablaIngresosBody");
+        if (datos.length === 0) {
+            tabla.innerHTML = '<tr><td colspan="4" class="celda-estado">No se encontraron pacientes para esta especialidad.</td></tr>';
+            return;
+        }
 
-        if(!tabla) return;
+        tabla.innerHTML = datos.map((item, i) => `
+            <tr>
+                <td style="text-align:center; font-weight:bold; color:var(--azul-institucional);">${i + 1}</td>
+                <td>${item.apellidos}, ${item.nombres}</td>
+                <td style="text-align:center; font-weight:bold;">${item.cantidadCitas}</td>
+                <td style="text-align:center; font-weight:bold;">S/ ${parseFloat(item.totalPagos).toFixed(2)}</td>
+            </tr>
+        `).join('');
 
-        tabla.innerHTML = "";
-
-        datos.forEach(item=>{
-
-            tabla.innerHTML += `
-
-                <tr>
-
-                    <td>${item.especialidad}</td>
-
-                    <td>${item.totalCitas}</td>
-
-                    <td>${item.pacientesUnicos}</td>
-
-                    <td>S/. ${item.ingresos}</td>
-
-                </tr>
-
-            `;
-
-        });
-
-    }catch(error){
-
+    } catch (error) {
         console.error(error);
-
+        tabla.innerHTML = '<tr><td colspan="4" class="celda-estado" style="color:red;">Error al cargar los pacientes.</td></tr>';
     }
+};
 
-}
+window.limpiarFiltroPacientesEspecialidad = function() {
+    document.getElementById('filtroEspecialidadPacientes').selectedIndex = 0;
+    document.getElementById('tablaIngresosBody').innerHTML =
+        '<tr><td colspan="4" class="celda-estado">Selecciona una especialidad y haz clic en Buscar.</td></tr>';
+};

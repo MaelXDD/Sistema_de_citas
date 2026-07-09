@@ -6,12 +6,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utp.citas.citas.model.DoctorCitasDTO;
-import utp.citas.citas.model.EspecialidadDTO;
+import utp.citas.citas.model.PacienteEspecialidadDTO;
 import utp.citas.citas.repository.CitaRepository;
 import utp.citas.citas.service.impl.ReporteService;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -89,34 +88,21 @@ public class ReporteController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/estadisticas/ingresos-especialidad")
-    public List<EspecialidadDTO> especialidadDTOS(){
+    @GetMapping("/estadisticas/pacientes-especialidad")
+    public ResponseEntity<List<PacienteEspecialidadDTO>> pacientesPorEspecialidad(
+            @RequestParam Integer idEspecialidad) {
 
-        List<Object[]> datos = citaRepository.ingresosEspecialidad();
+        List<Object[]> datos = citaRepository.pacientesPorEspecialidad(idEspecialidad);
 
-        List<EspecialidadDTO> lista = new ArrayList<>();
+        List<PacienteEspecialidadDTO> lista = datos.stream()
+                .map(fila -> new PacienteEspecialidadDTO(
+                        (String) fila[0],
+                        (String) fila[1],
+                        (BigDecimal) fila[2],
+                        ((Number) fila[3]).longValue()
+                ))
+                .collect(java.util.stream.Collectors.toList());
 
-        for(Object[] fila : datos){
-
-            lista.add(
-
-                    new EspecialidadDTO(
-
-                            fila[0].toString(),
-
-                            ((Number) fila[1]).longValue(),
-
-                            ((Number) fila[2]).longValue(),
-
-                            (BigDecimal) fila[3]
-
-                    )
-
-            );
-
-        }
-
-        return lista;
-
+        return ResponseEntity.ok(lista);
     }
 }

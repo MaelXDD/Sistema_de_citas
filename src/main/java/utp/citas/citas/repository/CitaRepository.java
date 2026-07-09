@@ -55,32 +55,20 @@ public interface    CitaRepository extends JpaRepository<Cita, Integer> {
     );
 
     @Query(value = """
-
-SELECT
-
-e.nombre,
-COUNT(c.id_cita),
-COUNT(DISTINCT c.id_paciente),
-COALESCE(SUM(p.monto), 0) AS ingresos
-
-FROM especialidades e
-
-INNER JOIN doctores d
-ON e.id_especialidad=d.id_especialidad
-
-INNER JOIN citas c
-ON d.id_doctor=c.id_doctor
-
-INNER JOIN pagos p
-ON c.id_cita=p.id_cita
-
-WHERE p.estado_pago='COMPLETADO'
-
-GROUP BY e.nombre
-
-ORDER BY SUM(p.monto) DESC
-
+    SELECT
+        p.nombres,
+        p.apellidos,
+        COALESCE(SUM(pa.monto), 0) AS total_pagos,
+        COUNT(DISTINCT c.id_cita) AS cantidad_citas
+    FROM pacientes p
+    INNER JOIN citas c ON c.id_paciente = p.id_paciente
+    INNER JOIN doctores d ON d.id_doctor = c.id_doctor
+    INNER JOIN pagos pa ON pa.id_cita = c.id_cita
+    WHERE d.id_especialidad = :idEspecialidad
+      AND c.estado != 'CANCELADA'
+      AND pa.estado_pago = 'COMPLETADO'
+    GROUP BY p.id_paciente, p.nombres, p.apellidos
+    ORDER BY total_pagos DESC
 """, nativeQuery = true)
-
-    List<Object[]> ingresosEspecialidad();
+    List<Object[]> pacientesPorEspecialidad(@Param("idEspecialidad") Integer idEspecialidad);
 }

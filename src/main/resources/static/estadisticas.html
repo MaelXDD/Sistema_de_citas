@@ -111,15 +111,37 @@
             <div class="cabecera-panel">
                 <div class="titulos-seccion">
 
-                    <h2>Ingresos por Especialidad</h2>
+                    <h2>Pacientes por Especialidad</h2>
 
                     <p>
-                        Reporte consolidado de citas,
-                        pacientes atendidos e ingresos generados
-                        por cada especialidad médica.
+                        Selecciona una especialidad para ver los pacientes
+                        registrados, el total pagado por cada uno y la
+                        cantidad de citas que realizó.
                     </p>
 
                 </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="filtros-estadisticas">
+
+                <div class="contenedor-selector">
+                    <label class="etiqueta-selector">Especialidad:</label>
+                    <select id="filtroEspecialidadPacientes" class="selector-estandar">
+                        <option value="">Selecciona una especialidad</option>
+                    </select>
+                </div>
+
+                <div class="fila-botones-filtro">
+                    <button class="boton-azul" id="btnBuscarPacientesEspecialidad">
+                        Buscar
+                    </button>
+
+                    <button class="boton-blanco" onclick="limpiarFiltroPacientesEspecialidad()">
+                        ↺ Limpiar
+                    </button>
+                </div>
+
             </div>
 
             <div class="tabla-responsiva" style="margin-top:20px;">
@@ -130,10 +152,10 @@
 
                     <tr>
 
-                        <th>Especialidad</th>
-                        <th>Total Citas</th>
-                        <th>Pacientes</th>
-                        <th>Ingresos</th>
+                        <th>#</th>
+                        <th>Paciente</th>
+                        <th>Cantidad de Citas</th>
+                        <th>Total Pagado</th>
 
                     </tr>
 
@@ -143,9 +165,9 @@
 
                     <tr>
 
-                        <td colspan="5" class="celda-estado">
+                        <td colspan="4" class="celda-estado">
 
-                            Cargando información...
+                            Selecciona una especialidad y haz clic en Buscar.
 
                         </td>
 
