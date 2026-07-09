@@ -1914,3 +1914,20 @@ window.limpiarFiltroPacientesEspecialidad = function() {
     document.getElementById('tablaIngresosBody').innerHTML =
         '<tr><td colspan="4" class="celda-estado">Selecciona una especialidad y haz clic en Buscar.</td></tr>';
 };
+window.descargarReportePacientesEspecialidad = function() {
+    const idEspecialidad = document.getElementById('filtroEspecialidadPacientes').value;
+
+    if (!idEspecialidad) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Especialidad Requerida',
+            text: 'Por favor, selecciona una especialidad para poder generar el reporte en PDF.',
+            confirmButtonColor: '#004a99'
+        });
+        return;
+    }
+
+    // Abre el endpoint generado en el backend en una pestaña nueva para su descarga/vista
+    const urlReporte = `${API}/api/reportes/pacientes-especialidad/${idEspecialidad}/pdf`;
+    window.open(urlReporte, '_blank');
+};

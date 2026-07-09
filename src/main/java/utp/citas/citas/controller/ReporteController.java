@@ -144,4 +144,17 @@ public class ReporteController {
         }
         return lista;
     }
+    @GetMapping("/pacientes-especialidad/{idEspecialidad}/pdf")
+    public ResponseEntity<byte[]> descargarReportePacientesEspecialidad(@PathVariable Integer idEspecialidad) {
+        try {
+            byte[] pdfBytes = reporteService.generarReportePacientesPorEspecialidadPDF(idEspecialidad);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "Reporte_Pacientes_Especialidad_" + idEspecialidad + ".pdf");
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
