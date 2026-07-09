@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utp.citas.citas.model.PacienteEspecialidadDTO;
 import utp.citas.citas.model.ReporteAfluenciaDTO;
 import utp.citas.citas.model.DoctorCitasDTO;
 import utp.citas.citas.controller.EspecialidadDTO;
@@ -106,6 +107,24 @@ public class ReporteController {
                 ))
                 .collect(java.util.stream.Collectors.toList());
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/estadisticas/pacientes-especialidad")
+    public ResponseEntity<List<PacienteEspecialidadDTO>> pacientesPorEspecialidad(
+            @RequestParam Integer idEspecialidad) {
+
+        List<Object[]> datos = citaRepository.pacientesPorEspecialidad(idEspecialidad);
+
+        List<PacienteEspecialidadDTO> lista = datos.stream()
+                .map(fila -> new PacienteEspecialidadDTO(
+                        (String) fila[0],
+                        (String) fila[1],
+                        (BigDecimal) fila[2],
+                        ((Number) fila[3]).longValue()
+                ))
+                .collect(java.util.stream.Collectors.toList());
+
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/estadisticas/ingresos-especialidad")
