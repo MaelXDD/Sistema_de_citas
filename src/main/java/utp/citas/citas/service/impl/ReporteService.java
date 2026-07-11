@@ -78,4 +78,20 @@ public class ReporteService {
             return JasperExportManager.exportReportToPdf(jasperPrint);
         }
     }
+    public byte[] generarReporteDoctoresCitasPDF(Integer idEspecialidad, String estado) throws Exception {
+        InputStream jrxmlInput = new ClassPathResource("reportes/ReporteConsultaEspecialidad.jrxml").getInputStream();
+        JasperReport jasperReport = JasperCompileManager.compileReport(jrxmlInput);
+
+        InputStream logoInput = new ClassPathResource("static/imagenes/logomunicipalidad.png").getInputStream();
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("idEspecialidad", idEspecialidad);
+        parameters.put("estado", (estado == null || estado.isBlank()) ? null : estado);
+        parameters.put("logo", logoInput);
+
+        try (Connection conn = dataSource.getConnection()) {
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        }
+    }
 }

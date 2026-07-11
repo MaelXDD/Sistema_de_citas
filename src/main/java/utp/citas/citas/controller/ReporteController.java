@@ -157,4 +157,19 @@ public class ReporteController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/estadisticas/doctores-citas/pdf")
+    public ResponseEntity<byte[]> descargarReporteDoctoresCitas(
+            @RequestParam(required = false) Integer idEspecialidad,
+            @RequestParam(required = false) String estado) {
+        try {
+            byte[] pdfBytes = reporteService.generarReporteDoctoresCitasPDF(idEspecialidad, estado);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "Reporte_Doctores_Citas.pdf");
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

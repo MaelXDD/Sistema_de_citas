@@ -1931,3 +1931,13 @@ window.descargarReportePacientesEspecialidad = function() {
     const urlReporte = `${API}/api/reportes/pacientes-especialidad/${idEspecialidad}/pdf`;
     window.open(urlReporte, '_blank');
 };
+window.descargarReporteDoctoresCitas = function() {
+    const idEspecialidad = document.getElementById('filtroEspecialidad').value;
+    const estado         = document.getElementById('filtroEstado').value;
+
+    let url = `${API}/api/reportes/estadisticas/doctores-citas/pdf?`;
+    if (idEspecialidad) url += `idEspecialidad=${idEspecialidad}&`;
+    if (estado)         url += `estado=${estado}`;
+
+    window.open(url, '_blank');
+};
