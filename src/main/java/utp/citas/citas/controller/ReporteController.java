@@ -86,6 +86,24 @@ public class ReporteController {
         }
     }
 
+    @GetMapping("/consulta3/pdf")
+    public ResponseEntity<byte[]> descargarReporteConsulta3(
+            @RequestParam(value = "dia", defaultValue = "Todos") String dia,
+            @RequestParam(value = "turno", defaultValue = "Todos") String turno,
+            @RequestParam(value = "especialidad", defaultValue = "Todos") String especialidad) {
+        try {
+            byte[] pdfBytes = reporteService.generarReporteConsulta3PDF(dia, turno, especialidad);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("inline", "Reporte_Consulta3.pdf");
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // ==========================================
     // ENDPOINTS DE ESTADÍSTICAS ADICIONALES
     // ==========================================

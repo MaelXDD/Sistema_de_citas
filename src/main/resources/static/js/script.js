@@ -1772,6 +1772,22 @@ window.descargarReporteEspecialidades = function() {
     window.open(API + '/api/reportes/especialidades/pdf', '_blank');
 };
 
+window.descargarReporteConsulta3 = function() {
+    const diaElement = document.getElementById('filtroDiaSemana');
+    const turnoElement = document.getElementById('filtroTurno');
+
+    const dia = diaElement ? diaElement.value : "Todos";
+    const turno = turnoElement ? turnoElement.value : "Todos";
+
+    const esp = "Todos";
+
+    const url = API + `/api/reportes/consulta3/pdf?dia=${encodeURIComponent(dia)}&turno=${encodeURIComponent(turno)}&especialidad=${encodeURIComponent(esp)}`;
+
+    console.log("Generando reporte con URL:", url);
+
+    descargarReporte(url);
+};
+
 window.buscarEstadisticas = async function() {
     const tbody          = document.getElementById('tablaEstadisticasBody');
     const idEspecialidad = document.getElementById('filtroEspecialidad').value;
