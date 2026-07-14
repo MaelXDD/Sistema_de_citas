@@ -53,11 +53,13 @@ public class ReporteService {
     public byte[] generarReporteConsulta3PDF(String dia, String turno, String especialidad) throws Exception {
         InputStream reportStream = getClass().getResourceAsStream("/reportes/Consulta3.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+        InputStream logoInput = new ClassPathResource("static/imagenes/logomunicipalidad.png").getInputStream();
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("p_dia_semana", dia);
         parameters.put("p_turno", turno);
         parameters.put("p_especialidad", especialidad);
+        parameters.put("logo", logoInput);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource.getConnection());
 
